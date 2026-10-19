@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>অনলাইন সার্ভিস</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
+<style>
+:root{--pri:#0f766e;--bg:#f4f6f8;--card:#fff;--tx:#14202b;--mut:#64748b;--bd:#e3e8ee;--sh:0 10px 30px rgba(15,30,50,.08);--soft:color-mix(in srgb,var(--pri) 10%,transparent)}
+@media(prefers-color-scheme:dark){:root{--bg:#0d1319;--card:#16202a;--tx:#eef3f8;--mut:#93a4b5;--bd:#27333f;--sh:0 10px 30px rgba(0,0,0,.4)}}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.65}
+.hero{background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pri) 50%,#000));color:#fff;text-align:center;padding:38px 20px 90px;border-radius:0 0 34px 34px}
+.logo{width:72px;height:72px;border-radius:20px;object-fit:cover;background:#fff3;margin:0 auto 12px;display:block}
+.hero h1{margin:0;font-size:1.7rem;font-weight:700}
+.hero p{margin:6px 0 0;opacity:.9}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+.chips span{background:#ffffff26;padding:4px 12px;border-radius:99px;font-size:.8rem}
+main{max-width:600px;margin:-56px auto 0;padding:0 14px 20px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh)}
+.card h2{margin:0 0 4px;font-size:1.15rem}
+.sub{color:var(--mut);font-size:.85rem;margin:0 0 12px}
+.step{display:flex;align-items:center;gap:10px;margin:20px 0 10px;font-weight:600}
+.step i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:.8rem}
+label{display:block;margin:10px 0 4px;font-weight:600;font-size:.88rem}
+input,select,textarea,button{width:100%;padding:12px 14px;border:1.5px solid var(--bd);border-radius:12px;font:inherit;background:var(--bg);color:var(--tx);outline:none}
+input:focus,textarea:focus{border-color:var(--pri)}
+button{background:var(--pri);color:#fff;border:0;font-weight:700;margin-top:14px;cursor:pointer;transition:.15s}
+button:hover{filter:brightness(1.08)}button:disabled{opacity:.6}
+button.sec{background:transparent;color:var(--pri);border:1.5px solid var(--pri)}
+button.danger{background:#dc2626}
+button.sm{width:auto;padding:7px 14px;margin:6px 6px 0 0;font-size:.85rem}
+.svc{display:grid;gap:10px}
+.svc label{margin:0;border:2px solid var(--bd);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:500}
+.svc label:has(input:checked){border-color:var(--pri);background:var(--soft)}
+.svc input{display:none}
+.svc small{display:block;color:var(--mut);font-weight:400}
+.svc b{color:var(--pri);white-space:nowrap}
+.drop{border:2px dashed var(--bd);border-radius:14px;padding:18px;text-align:center;color:var(--mut);cursor:pointer;display:block;margin:0}
+.drop:hover{border-color:var(--pri)}
+.drop input{display:none}
+.pay{background:var(--soft);border:1px solid color-mix(in srgb,var(--pri) 30%,transparent);border-radius:14px;padding:14px;margin:10px 0}
+.pay .num{font-size:1.4rem;font-weight:700;color:var(--pri);letter-spacing:.5px}
+.pay .tot{display:flex;justify-content:space-between;font-weight:700;margin-top:8px;border-top:1px dashed var(--bd);padding-top:8px}
+.notice{background:#fef3c7;color:#78350f;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:.92rem}
+.msg{margin-top:12px;font-weight:600}.err{color:#dc2626}
+.ok{text-align:center}.ok .code{font-size:2.2rem;font-weight:700;letter-spacing:6px;color:var(--pri);margin:8px 0}
+.row{border:1px solid var(--bd);border-radius:14px;padding:14px;margin-top:12px;font-size:.92rem}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.75rem;font-weight:600;background:#f59e0b;color:#000;vertical-align:middle}
+.badge.done{background:#16a34a;color:#fff}.badge.rejected{background:#dc2626;color:#fff}.badge.processing{background:#2563eb;color:#fff}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px}
+.tabs button,.fl button{width:auto;margin:0;padding:8px 16px;background:var(--card);color:var(--tx);border:1.5px solid var(--bd);white-space:nowrap}
+.tabs button.on,.fl button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.fl{display:flex;gap:6px;overflow-x:auto;margin:10px 0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hide{display:none!important}
+a{color:var(--pri);font-weight:600}
+footer{text-align:center;color:var(--mut);font-size:.85rem;padding:10px 16px 30px}
+footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <img id="logo" class="logo hide" alt="">
+  <h1 id="shopName">...</h1>
+  <p id="tagline"></p>
+  <div class="chips"><span>🔒 নিরাপদ</span><span>⚡ দ্রুত ডেলিভারি</span><span>📥 অনলাইনে ডাউনলোড</span></div>
+</div>
+<main>
+
+<div id="customer">
+  <div id="noticeBox" class="notice hide"></div>
+
+  <div class="card" id="orderCard">
+    <h2>নতুন অর্ডার</h2>
+    <p class="sub">৩টি সহজ ধাপে কাজ জমা দিন</p>
+
+    <div class="step"><i>১</i> কাজের ধরন বাছাই করুন</div>
+    <div class="svc" id="svcList"></div>
+
+    <div class="step"><i>২</i> আপনার তথ্য ও ছবি</div>
+    <label>নাম</label><input id="name" autocomplete="name">
+    <label>মোবাইল নম্বর</label><input id="phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" autocomplete="tel">
+    <label>ছবি / কাগজ (ছবি বা PDF, সর্বোচ্চ ৫MB)</label>
+    <label class="drop" id="drop"><span id="dropTxt">📎 এখানে ট্যাপ করে ফাইল বাছাই করুন</span><input id="file" type="file" accept="image/*,.pdf"></label>
+    <label>অতিরিক্ত তথ্য (ঐচ্ছিক)</label><textarea id="note" rows="2"></textarea>
+
+    <div class="step"><i>৩</i> পেমেন্ট</div>
+    <div class="pay">
+      <div id="payType" class="sub" style="margin:0"></div>
+      <div class="num" id="payNum"></div>
+      <button class="sec sm" id="copyNum" type="button">নম্বর কপি</button>
+      <div class="tot"><span>মোট টাকা</span><span id="total">৳০</span></div>
+    </div>
+    <p class="sub" id="payNote"></p>
+    <label>TrxID</label><input id="trx" placeholder="যেমন: 9AB12CD34E" autocapitalize="characters">
+    <button id="orderBtn">অর্ডার জমা দিন</button>
+    <div class="msg" id="orderMsg"></div>
+  </div>
+
+  <div class="card ok hide" id="doneCard">
+    <h2>✅ অর্ডার জমা হয়েছে</h2>
+    <p class="sub">আপনার অর্ডার কোডটি লিখে বা কপি করে রাখুন</p>
+    <div class="code" id="doneCode"></div>
+    <button class="sec" id="copyCode">কোড কপি</button>
+    <button id="newOrder">আরেকটি অর্ডার</button>
+  </div>
+
+  <div class="card" id="trackCard">
+    <h2>অর্ডারের অবস্থা ও ডাউনলোড</h2>
+    <p class="sub">কোড ও মোবাইল নম্বর দিয়ে দেখুন</p>
+    <label>অর্ডার কোড</label><input id="tcode" style="text-transform:uppercase" placeholder="AB12CD">
+    <label>মোবাইল নম্বর</label><input id="tphone" type="tel" inputmode="numeric">
+    <button class="sec" id="trackBtn">দেখুন</button>
+    <div class="msg" id="trackMsg"></div>
+  </div>
+</div>
+
+<!-- ===== অ্যাডমিন (লিংকের শেষে #admin) ===== -->
+<div id="admin" class="hide">
+  <div class="card" id="loginBox">
+    <h2>অ্যাডমিন লগইন</h2>
+    <label>ইমেইল</label><input id="aemail" type="email">
+    <label>পাসওয়ার্ড</label><input id="apass" type="password">
+    <button id="loginBtn">লগইন</button>
+    <div class="msg err" id="loginMsg"></div>
+  </div>
+
+  <div id="panel" class="hide">
+    <div class="tabs" id="tabs">
+      <button data-t="tOrders" class="on">📦 অর্ডার</button>
+      <button data-t="tServices">🛠 সার্ভিস</button>
+      <button data-t="tSettings">⚙️ সেটিংস</button>
+      <button id="logoutBtn">লগআউট</button>
+    </div>
+
+    <div id="tOrders" class="card">
+      <input id="search" placeholder="🔍 কোড, নাম, ফোন বা TrxID দিয়ে খুঁজুন">
+      <div class="fl" id="filters"></div>
+      <div id="orders"></div>
+    </div>
+
+    <div id="tServices" class="card hide">
+      <h2>সার্ভিস ও দাম</h2>
+      <p class="sub">এখানে বদলালে সাইটে সাথে সাথে বদলে যাবে</p>
+      <div id="svcAdmin"></div>
+      <button id="addSvc">+ নতুন সার্ভিস যোগ করুন</button>
+    </div>
+
+    <div id="tSettings" class="card hide">
+      <h2>সাইট সেটিংস</h2>
+      <label>লোগো (ঐচ্ছিক)</label><input id="logoFile" type="file" accept="image/*">
+      <div id="setForm"></div>
+      <button id="saveSet">সেটিংস সেভ করুন</button>
+      <div class="msg" id="setMsg"></div>
+    </div>
+  </div>
+</div>
+
+</main>
+<footer id="foot"></footer>
+
+<script>
+// ===== শুধু এই ২টি লাইন একবার বদলাতে হবে। বাকি সব অ্যাডমিন প্যানেল থেকে =====
+const SUPABASE_URL = "https://cframkspqbmyiyrfsqlc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_xaD8YiQZSFDikmrKXFst8g_HpLXWA04";
+// ==========================================================================
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const bn = n => Number(n || 0).toLocaleString("bn-BD");
+const setMsg = (id, t, err) => { $(id).textContent = t; $(id).className = "msg" + (err ? " err" : ""); };
+const normPhone = s => s.replace(/[০-৯]/g, d => "০১২৩৪৫৬৭৮৯".indexOf(d)).replace(/\s|-/g, "");
+const ext = f => (f.name.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "");
+const copy = t => navigator.clipboard?.writeText(t);
+
+let S = {}, SVC = [], sel = null;
+
+async function loadSite(){
+  const [a, b] = await Promise.all([
+    sb.from("settings").select("*"),
+    sb.from("services").select("*").eq("active", true).order("sort")
+  ]);
+  S = {}; (a.data || []).forEach(r => S[r.key] = r.value || "");
+  SVC = b.data || [];
+  applySite();
+}
+
+function applySite(){
+  const name = S.shop_name || "আমার দোকান";
+  document.title = name;
+  $("shopName").textContent = name;
+  $("tagline").textContent = S.tagline || "";
+  if(S.accent) document.documentElement.style.setProperty("--pri", S.accent);
+  if(S.logo_url){ $("logo").src = S.logo_url; $("logo").classList.remove("hide"); } else $("logo").classList.add("hide");
+  $("noticeBox").textContent = S.notice || ""; $("noticeBox").classList.toggle("hide", !S.notice);
+  $("payType").textContent = S.pay_type || ""; $("payNum").textContent = S.pay_number || "";
+  $("payNote").textContent = S.pay_note || "";
+  const w = (S.whatsapp || "").replace(/\D/g, "");
+  $("foot").innerHTML = `<div class="ct">${S.phone ? `<a href="tel:${esc(S.phone)}">📞 ${esc(S.phone)}</a>` : ""}${w ? `<a href="https://wa.me/${w}" target="_blank">💬 WhatsApp</a>` : ""}</div>${S.address ? esc(S.address) + "<br>" : ""}${S.hours ? esc(S.hours) + "<br>" : ""}© ${esc(name)}`;
+  $("svcList").innerHTML = SVC.map((s, i) => `<label><input type="radio" name="svc" value="${i}"><span>${esc(s.name)}${s.description ? `<small>${esc(s.description)}</small>` : ""}</span><b>৳${bn(s.price)}</b></label>`).join("") || '<p class="sub">কোনো সার্ভিস নেই।</p>';
+  document.querySelectorAll('input[name=svc]').forEach(r => r.onchange = () => { sel = SVC[+r.value]; $("total").textContent = "৳" + bn(sel.price); });
+  sel = null; $("total").textContent = "৳০";
+}
+
+$("copyNum").onclick = () => { copy(S.pay_number || ""); $("copyNum").textContent = "কপি হয়েছে ✓"; setTimeout(() => $("copyNum").textContent = "নম্বর কপি", 1500); };
+$("file").onchange = () => { const f = $("file").files[0]; $("dropTxt").textContent = f ? "✅ " + f.name : "📎 এখানে ট্যাপ করে ফাইল বাছাই করুন"; };
+
+function newCode(){
+  const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from(crypto.getRandomValues(new Uint8Array(6)), b => c[b % c.length]).join("");
+}
+
+$("orderBtn").onclick = async () => {
+  const name = $("name").value.trim(), phone = normPhone($("phone").value.trim()),
+        trx = $("trx").value.trim().toUpperCase(), file = $("file").files[0];
+  if(!sel) return setMsg("orderMsg", "কাজের ধরন বাছাই করুন।", true);
+  if(!name || !/^01\d{9}$/.test(phone)) return setMsg("orderMsg", "নাম ও সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন।", true);
+  if(!file) return setMsg("orderMsg", "ছবি বা ফাইল আপলোড করুন।", true);
+  if(file.size > 5 * 1024 * 1024) return setMsg("orderMsg", "ফাইল ৫MB এর বেশি হবে না।", true);
+  if(trx.length < 6) return setMsg("orderMsg", "সঠিক TrxID দিন।", true);
+  $("orderBtn").disabled = true; setMsg("orderMsg", "জমা হচ্ছে, অপেক্ষা করুন...");
+  const code = newCode(), path = `${code}/${crypto.randomUUID()}.${ext(file)}`;
+  const up = await sb.storage.from("uploads").upload(path, file);
+  if(up.error){ $("orderBtn").disabled = false; return setMsg("orderMsg", "ফাইল আপলোড হয়নি, আবার চেষ্টা করুন।", true); }
+  const ins = await sb.from("orders").insert({code, name, phone, service: sel.name, price: sel.price, trx_id: trx, note: $("note").value.trim(), image_path: path});
+  $("orderBtn").disabled = false;
+  if(ins.error) return setMsg("orderMsg", "অর্ডার জমা হয়নি, আবার চেষ্টা করুন।", true);
+  try{ localStorage.setItem("lastOrder", JSON.stringify({code, phone})); }catch(e){}
+  $("doneCode").textContent = code; $("orderCard").classList.add("hide"); $("doneCard").classList.remove("hide");
+  $("tcode").value = code; $("tphone").value = phone; setMsg("orderMsg", "");
+  scrollTo({top: 0, behavior: "smooth"});
+};
+$("copyCode").onclick = () => { copy($("doneCode").textContent); $("copyCode").textContent = "কপি হয়েছে ✓"; };
+$("newOrder").onclick = () => { ["name","phone","trx","note"].forEach(i => $(i).value = ""); $("file").value = ""; $("dropTxt").textContent = "📎 এখানে ট্যাপ করে ফাইল বাছাই করুন"; document.querySelectorAll('input[name=svc]').forEach(r => r.checked = false); sel = null; $("total").textContent = "৳০"; $("doneCard").classList.add("hide"); $("orderCard").classList.remove("hide"); $("copyCode").textContent = "কোড কপি"; };
+
+try{ const l = JSON.parse(localStorage.getItem("lastOrder") || "null"); if(l){ $("tcode").value = l.code; $("tphone").value = l.phone; } }catch(e){}
+
+$("trackBtn").onclick = async () => {
+  const code = $("tcode").value.trim(), phone = normPhone($("tphone").value.trim());
+  if(!code || !phone) return setMsg("trackMsg", "কোড ও ফোন নম্বর দিন।", true);
+  const {data, error} = await sb.rpc("track_order", {p_code: code, p_phone: phone});
+  if(error || !data || !data.length) return setMsg("trackMsg", "কোনো অর্ডার পাওয়া যায়নি। কোড ও নম্বর মিলিয়ে দেখুন।", true);
+  const o = data[0], el = $("trackMsg"); el.className = "msg";
+  const extra = o.admin_note ? `<br><span class="sub">বার্তা: ${esc(o.admin_note)}</span>` : "";
+  if(o.status === "done" && o.result_path){
+    const url = sb.storage.from("results").getPublicUrl(o.result_path).data.publicUrl;
+    el.innerHTML = `✅ ${esc(o.service)} – কাজ সম্পন্ন।${extra}<button onclick="window.open('${url}','_blank')">📥 ডাউনলোড করুন</button>`;
+  } else if(o.status === "rejected") el.innerHTML = `❌ অর্ডারটি বাতিল হয়েছে।${extra}`;
+  else if(o.status === "processing") el.innerHTML = `🔵 ${esc(o.service)} – কাজ চলছে। পেমেন্ট যাচাই হয়েছে।${extra}`;
+  else el.innerHTML = `🟡 ${esc(o.service)} – পেমেন্ট যাচাইয়ের অপেক্ষায়।${extra}`;
+};
+
+// ================= অ্যাডমিন =================
+const SETFIELDS = [
+  ["shop_name","দোকানের নাম"],["tagline","ট্যাগলাইন"],["pay_type","পেমেন্ট মাধ্যম (যেমন: bKash Send Money)"],
+  ["pay_number","পেমেন্ট নম্বর"],["pay_note","পেমেন্টের নির্দেশনা"],["notice","নোটিশ (ফাঁকা রাখলে দেখাবে না)"],
+  ["phone","ফোন নম্বর"],["whatsapp","WhatsApp নম্বর (দেশকোড সহ, যেমন 8801XXXXXXXXX)"],
+  ["address","ঠিকানা"],["hours","খোলার সময়"],["accent","মূল রং"]
+];
+let ALL = [], filter = "all";
+
+function route(){
+  const adm = location.hash === "#admin";
+  $("customer").classList.toggle("hide", adm); $("admin").classList.toggle("hide", !adm);
+  if(adm) checkSession();
+}
+addEventListener("hashchange", route);
+
+async function checkSession(){
+  const {data} = await sb.auth.getSession();
+  const on = !!data.session;
+  $("loginBox").classList.toggle("hide", on); $("panel").classList.toggle("hide", !on);
+  if(on){ loadOrders(); loadSvcAdmin(); buildSettings(); }
+}
+$("loginBtn").onclick = async () => {
+  const {error} = await sb.auth.signInWithPassword({email: $("aemail").value.trim(), password: $("apass").value});
+  if(error) return setMsg("loginMsg", "ইমেইল বা পাসওয়ার্ড ভুল।", true);
+  setMsg("loginMsg", ""); checkSession();
+};
+$("logoutBtn").onclick = async () => { await sb.auth.signOut(); checkSession(); };
+document.querySelectorAll("#tabs button[data-t]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("#tabs button[data-t]").forEach(x => x.classList.toggle("on", x === b));
+  ["tOrders","tServices","tSettings"].forEach(t => $(t).classList.toggle("hide", t !== b.dataset.t));
+});
+
+// --- অর্ডার ---
+const ST = {all:"সব", pending:"অপেক্ষায়", processing:"চলছে", done:"সম্পন্ন", rejected:"বাতিল"};
+async function loadOrders(){
+  const {data, error} = await sb.from("orders").select("*").order("created_at", {ascending: false});
+  if(error) return $("orders").textContent = "লোড করা যায়নি।";
+  ALL = data; renderOrders();
+}
+$("search").oninput = renderOrders;
+async function renderOrders(){
+  $("filters").innerHTML = Object.entries(ST).map(([k, v]) => `<button data-f="${k}" class="${filter === k ? "on" : ""}">${v} (${k === "all" ? ALL.length : ALL.filter(o => o.status === k).length})</button>`).join("");
+  $("filters").querySelectorAll("button").forEach(b => b.onclick = () => { filter = b.dataset.f; renderOrders(); });
+  const q = $("search").value.trim().toLowerCase();
+  const list = ALL.filter(o => (filter === "all" || o.status === filter) && (!q || [o.code, o.name, o.phone, o.trx_id].join(" ").toLowerCase().includes(q)));
+  const box = $("orders"); box.innerHTML = list.length ? "" : '<p class="sub">কোনো অর্ডার নেই।</p>';
+  for(const o of list){
+    const div = document.createElement("div"); div.className = "row";
+    const url = o.image_path ? (await sb.storage.from("uploads").createSignedUrl(o.image_path, 3600)).data?.signedUrl : "";
+    div.innerHTML = `<b>${esc(o.code)}</b> <span class="badge ${esc(o.status)}">${ST[o.status] || esc(o.status)}</span>
+      <div class="sub" style="margin:2px 0">${new Date(o.created_at).toLocaleString("bn-BD")}</div>
+      <b>${esc(o.service)}</b> – ৳${bn(o.price)}<br>
+      👤 ${esc(o.name)} · <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a><br>
+      TrxID: <b>${esc(o.trx_id)}</b><br>
+      ${o.note ? `📝 ${esc(o.note)}<br>` : ""}
+      ${url ? `<a href="${url}" target="_blank">📎 গ্রাহকের ফাইল দেখুন</a><br>` : ""}
+      <label>গ্রাহককে বার্তা (ঐচ্ছিক)</label><input class="an" value="${esc(o.admin_note)}">
+      <label>তৈরি কাজের ফাইল ${o.result_path ? "(নতুন দিলে বদলে যাবে)" : ""}</label><input type="file" class="rf">
+      <button class="sm up">✅ আপলোড করে সম্পন্ন করুন</button>
+      <button class="sm sec pr">🔵 পেমেন্ট ঠিক আছে</button>
+      <button class="sm sec rj">বাতিল</button>
+      <button class="sm danger dl">মুছুন</button>`;
+    const upd = async patch => { const r = await sb.from("orders").update(patch).eq("id", o.id); if(r.error) alert("সেভ হয়নি"); loadOrders(); };
+    const note = () => div.querySelector(".an").value.trim();
+    div.querySelector(".up").onclick = async () => {
+      const f = div.querySelector(".rf").files[0]; if(!f) return alert("আগে ফাইল বাছাই করুন");
+      const p = `${o.code}/${crypto.randomUUID()}.${ext(f)}`;
+      const r = await sb.storage.from("results").upload(p, f);
+      if(r.error) return alert("আপলোড ব্যর্থ");
+      upd({result_path: p, status: "done", admin_note: note()});
+    };
+    div.querySelector(".pr").onclick = () => upd({status: "processing", admin_note: note()});
+    div.querySelector(".rj").onclick = () => confirm("বাতিল করবেন?") && upd({status: "rejected", admin_note: note()});
+    div.querySelector(".dl").onclick = async () => {
+      if(!confirm("অর্ডারটি স্থায়ীভাবে মুছবেন?")) return;
+      if(o.image_path) await sb.storage.from("uploads").remove([o.image_path]);
+      await sb.from("orders").delete().eq("id", o.id); loadOrders();
+    };
+    box.appendChild(div);
+  }
+}
+
+// --- সার্ভিস ---
+async function loadSvcAdmin(){
+  const {data} = await sb.from("services").select("*").order("sort");
+  $("svcAdmin").innerHTML = "";
+  (data || []).forEach(s => {
+    const d = document.createElement("div"); d.className = "row";
+    d.innerHTML = `<label>নাম</label><input class="n" value="${esc(s.name)}">
+      <label>বিবরণ</label><input class="ds" value="${esc(s.description)}">
+      <div class="grid2"><div><label>দাম (৳)</label><input class="p" type="number" value="${esc(s.price)}"></div>
+      <div><label>ক্রম</label><input class="so" type="number" value="${esc(s.sort)}"></div></div>
+      <label style="display:flex;gap:8px;align-items:center"><input class="ac" type="checkbox" style="width:auto" ${s.active ? "checked" : ""}> সাইটে দেখান</label>
+      <button class="sm sv">সেভ</button><button class="sm danger rm">মুছুন</button>`;
+    d.querySelector(".sv").onclick = async () => {
+      const r = await sb.from("services").update({name: d.querySelector(".n").value.trim(), description: d.querySelector(".ds").value.trim(), price: +d.querySelector(".p").value || 0, sort: +d.querySelector(".so").value || 0, active: d.querySelector(".ac").checked}).eq("id", s.id);
+      alert(r.error ? "সেভ হয়নি" : "সেভ হয়েছে ✓");
+    };
+    d.querySelector(".rm").onclick = async () => { if(confirm("সার্ভিস মুছবেন?")){ await sb.from("services").delete().eq("id", s.id); loadSvcAdmin(); } };
+    $("svcAdmin").appendChild(d);
+  });
+}
+$("addSvc").onclick = async () => {
+  const {data} = await sb.from("services").select("sort").order("sort", {ascending: false}).limit(1);
+  await sb.from("services").insert({name: "নতুন সার্ভিস", price: 0, sort: (data?.[0]?.sort || 0) + 1});
+  loadSvcAdmin();
+};
+
+// --- সেটিংস ---
+async function buildSettings(){
+  const {data} = await sb.from("settings").select("*"); const cur = {}; (data || []).forEach(r => cur[r.key] = r.value || "");
+  $("setForm").innerHTML = SETFIELDS.map(([k, l]) => `<label>${l}</label><input data-k="${k}" ${k === "accent" ? 'type="color" style="height:46px;padding:4px"' : ""} value="${esc(cur[k] || (k === "accent" ? "#0f766e" : ""))}">`).join("");
+}
+$("saveSet").onclick = async () => {
+  const rows = [...document.querySelectorAll("#setForm input")].map(i => ({key: i.dataset.k, value: i.value.trim()}));
+  const lf = $("logoFile").files[0];
+  if(lf){
+    const p = `logo-${Date.now()}.${ext(lf)}`, r = await sb.storage.from("site").upload(p, lf);
+    if(r.error) return setMsg("setMsg", "লোগো আপলোড হয়নি।", true);
+    rows.push({key: "logo_url", value: sb.storage.from("site").getPublicUrl(p).data.publicUrl});
+  }
+  const r = await sb.from("settings").upsert(rows, {onConflict: "key"});
+  if(r.error) return setMsg("setMsg", "সেভ হয়নি।", true);
+  setMsg("setMsg", "সেভ হয়েছে ✓ (সাইট রিফ্রেশ করলে দেখবেন)"); $("logoFile").value = ""; loadSite();
+};
+
+loadSite(); route();
+</script>
+</body>
+</html>
