@@ -8,57 +8,78 @@
 <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.58.0/dist/umd/supabase.js"></script>
 <style>
-:root{--pri:#0f766e;--bg:#f4f6f8;--card:#fff;--tx:#14202b;--mut:#64748b;--bd:#e3e8ee;--sh:0 10px 30px rgba(15,30,50,.08);--soft:color-mix(in srgb,var(--pri) 10%,transparent)}
-@media(prefers-color-scheme:dark){:root{--bg:#0d1319;--card:#16202a;--tx:#eef3f8;--mut:#93a4b5;--bd:#27333f;--sh:0 10px 30px rgba(0,0,0,.4)}}
-*{box-sizing:border-box}
-body{margin:0;font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.65}
-.hero{background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pri) 50%,#000));color:#fff;text-align:center;padding:38px 20px 90px;border-radius:0 0 34px 34px}
-.logo{width:72px;height:72px;border-radius:20px;object-fit:cover;background:#fff3;margin:0 auto 12px;display:block}
-.hero h1{margin:0;font-size:1.7rem;font-weight:700}
-.hero p{margin:6px 0 0;opacity:.9}
+:root{--pri:#0f766e;--gold:#d9a93f;--bg:#f2f5f9;--card:#fff;--tx:#0f1b2a;--mut:#64748b;--bd:#e3e9f1;--sh:0 14px 40px rgba(15,30,60,.10);--soft:color-mix(in srgb,var(--pri) 9%,transparent);--r:22px}
+@media(prefers-color-scheme:dark){:root{--bg:#090e15;--card:#121a25;--tx:#eef3f9;--mut:#93a4b8;--bd:#233040;--sh:0 14px 40px rgba(0,0,0,.45)}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif;background:var(--bg);color:var(--tx);line-height:1.65;padding-bottom:104px}
+.hero{position:relative;overflow:hidden;color:#fff;text-align:center;padding:34px 20px 88px;border-radius:0 0 42px 42px;background:radial-gradient(800px 280px at 90% -20%,color-mix(in srgb,var(--pri) 80%,transparent),transparent),radial-gradient(520px 240px at 0% 120%,color-mix(in srgb,var(--gold) 40%,transparent),transparent),linear-gradient(160deg,#08131f,#102338)}
+.hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(#ffffff17 1px,transparent 1px);background-size:22px 22px;pointer-events:none}
+.hero>*{position:relative;z-index:1}
+.logo{width:76px;height:76px;border-radius:22px;object-fit:cover;margin:0 auto 12px;display:block;border:2px solid #ffffff44;box-shadow:0 10px 28px rgba(0,0,0,.4)}
+.hero h1{margin:0;font-size:1.75rem;font-weight:700;background:linear-gradient(90deg,#fff,#f6e3ad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{margin:6px 0 0;opacity:.85}
 .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
-.chips span{background:#ffffff26;padding:4px 12px;border-radius:99px;font-size:.8rem}
-main{max-width:600px;margin:-56px auto 0;padding:0 14px 20px}
-.card{background:var(--card);border:1px solid var(--bd);border-radius:20px;padding:20px;margin-bottom:16px;box-shadow:var(--sh)}
-.card h2{margin:0 0 4px;font-size:1.15rem}
-.sub{color:var(--mut);font-size:.85rem;margin:0 0 12px}
-.step{display:flex;align-items:center;gap:10px;margin:20px 0 10px;font-weight:600}
-.step i{font-style:normal;width:26px;height:26px;border-radius:50%;background:var(--pri);color:#fff;display:grid;place-items:center;font-size:.8rem}
+.chips span{background:#ffffff1c;border:1px solid #ffffff2e;backdrop-filter:blur(6px);padding:4px 12px;border-radius:99px;font-size:.78rem}
+main{max-width:620px;margin:-58px auto 0;padding:0 14px 20px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:22px;margin-bottom:16px;box-shadow:var(--sh);animation:up .45s ease both}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.card h2{margin:0 0 4px;font-size:1.18rem;font-weight:700}
+.sub{color:var(--mut);font-size:.86rem;margin:0 0 12px}
+.step{display:flex;align-items:center;gap:10px;margin:22px 0 10px;font-weight:700}
+.step i{font-style:normal;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gold),#b8862a);color:#1a1200;display:grid;place-items:center;font-size:.82rem;box-shadow:0 4px 12px rgba(217,169,63,.45)}
 label{display:block;margin:10px 0 4px;font-weight:600;font-size:.88rem}
-input,select,textarea,button{width:100%;padding:12px 14px;border:1.5px solid var(--bd);border-radius:12px;font:inherit;background:var(--bg);color:var(--tx);outline:none}
-input:focus,textarea:focus{border-color:var(--pri)}
-button{background:var(--pri);color:#fff;border:0;font-weight:700;margin-top:14px;cursor:pointer;transition:.15s}
-button:hover{filter:brightness(1.08)}button:disabled{opacity:.6}
-button.sec{background:transparent;color:var(--pri);border:1.5px solid var(--pri)}
-button.danger{background:#dc2626}
-button.sm{width:auto;padding:7px 14px;margin:6px 6px 0 0;font-size:.85rem}
-.svc{display:grid;gap:10px}
-.svc label{margin:0;border:2px solid var(--bd);border-radius:14px;padding:12px 14px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;align-items:center;font-weight:500}
-.svc label:has(input:checked){border-color:var(--pri);background:var(--soft)}
-.svc input{display:none}
-.svc small{display:block;color:var(--mut);font-weight:400}
-.svc b{color:var(--pri);white-space:nowrap}
+input,select,textarea,button{width:100%;padding:13px 15px;border:1.5px solid var(--bd);border-radius:14px;font:inherit;background:var(--bg);color:var(--tx);outline:none;transition:.18s}
+input:focus,textarea:focus,select:focus{border-color:var(--pri);box-shadow:0 0 0 4px var(--soft)}
+button{background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pri) 65%,#000));color:#fff;border:0;font-weight:700;margin-top:14px;cursor:pointer;box-shadow:0 10px 22px color-mix(in srgb,var(--pri) 35%,transparent)}
+button:hover{transform:translateY(-1px)}button:active{transform:scale(.98)}button:disabled{opacity:.6}
+button.sec{background:transparent;color:var(--pri);border:1.5px solid var(--pri);box-shadow:none}
+button.danger{background:#dc2626;box-shadow:none}
+button.sm{width:auto;padding:8px 15px;margin:6px 6px 0 0;font-size:.85rem}
 .drop{border:2px dashed var(--bd);border-radius:14px;padding:18px;text-align:center;color:var(--mut);cursor:pointer;display:block;margin:0}
-.drop:hover{border-color:var(--pri)}
+.drop:hover{border-color:var(--pri);background:var(--soft)}
 .drop input{display:none}
-.pay{background:var(--soft);border:1px solid color-mix(in srgb,var(--pri) 30%,transparent);border-radius:14px;padding:14px;margin:10px 0}
-.pay .num{font-size:1.4rem;font-weight:700;color:var(--pri);letter-spacing:.5px}
-.pay .tot{display:flex;justify-content:space-between;font-weight:700;margin-top:8px;border-top:1px dashed var(--bd);padding-top:8px}
-.notice{background:#fef3c7;color:#78350f;border-radius:14px;padding:12px 14px;margin-bottom:16px;font-size:.92rem}
+.pay{background:linear-gradient(135deg,var(--soft),transparent);border:1px solid color-mix(in srgb,var(--pri) 28%,transparent);border-radius:16px;padding:14px;margin:10px 0}
+.pay .num{font-size:1.5rem;font-weight:700;color:var(--pri);letter-spacing:.5px}
+.pay .tot{display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;margin-top:8px;border-top:1px dashed var(--bd);padding-top:8px}
+.notice{background:linear-gradient(135deg,#fff4d6,#ffeab0);color:#6b4a06;border-radius:16px;padding:12px 16px;margin-bottom:16px;font-size:.92rem;box-shadow:var(--sh)}
 .msg{margin-top:12px;font-weight:600}.err{color:#dc2626}
-.ok{text-align:center}.ok .code{font-size:2.2rem;font-weight:700;letter-spacing:6px;color:var(--pri);margin:8px 0}
-.row{border:1px solid var(--bd);border-radius:14px;padding:14px;margin-top:12px;font-size:.92rem}
-.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.75rem;font-weight:600;background:#f59e0b;color:#000;vertical-align:middle}
+.ok{text-align:center}.ok .code{font-size:2.3rem;font-weight:700;letter-spacing:7px;margin:8px 0;background:linear-gradient(90deg,var(--pri),var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent}
+.row{border:1px solid var(--bd);border-radius:16px;padding:14px;margin-top:12px;font-size:.92rem;background:var(--card)}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.74rem;font-weight:600;background:var(--gold);color:#1a1200;vertical-align:middle}
 .badge.done{background:#16a34a;color:#fff}.badge.rejected{background:#dc2626;color:#fff}.badge.processing{background:#2563eb;color:#fff}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px}
-.tabs button,.fl button{width:auto;margin:0;padding:8px 16px;background:var(--card);color:var(--tx);border:1.5px solid var(--bd);white-space:nowrap}
+.tabs button,.fl button{width:auto;margin:0;padding:9px 16px;background:var(--card);color:var(--tx);border:1.5px solid var(--bd);white-space:nowrap;box-shadow:none}
 .tabs button.on,.fl button.on{background:var(--pri);color:#fff;border-color:var(--pri)}
 .fl{display:flex;gap:6px;overflow-x:auto;margin:10px 0}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.hide{display:none!important}
+.item{border:1.5px solid var(--bd);border-radius:16px;padding:13px;margin-bottom:12px;background:var(--bg)}
+.item select{margin-bottom:8px}
+.item .drop{padding:12px;margin:0 0 8px}
+.ih{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.x{width:auto!important;margin:0!important;padding:4px 10px!important;background:transparent!important;color:#dc2626!important;border:1px solid #dc2626!important;font-size:.8rem;box-shadow:none!important}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.fc{background:var(--soft);border-radius:99px;padding:3px 10px;font-size:.8rem;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fc u{cursor:pointer;color:#dc2626;text-decoration:none;margin-left:6px}
+.sl{display:flex;justify-content:space-between;font-size:.92rem;padding:2px 0}
 a{color:var(--pri);font-weight:600}
+a.btn{display:block;text-align:center;background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pri) 65%,#000));color:#fff;border-radius:14px;padding:11px;margin-top:10px;text-decoration:none}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+a.qc{display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px 8px;border:1.5px solid var(--bd);border-radius:18px;text-decoration:none;background:var(--bg);color:var(--tx);font-size:.92rem;transition:.18s}
+a.qc:hover{border-color:var(--pri);transform:translateY(-2px)}
+a.qc i{font-style:normal;font-size:1.6rem}
+.chat{display:flex;flex-direction:column;gap:8px;max-height:340px;overflow:auto;margin-bottom:10px}
+.bub{max-width:84%;padding:9px 14px;border-radius:18px;font-size:.92rem;white-space:pre-wrap;word-break:break-word}
+.bub small{display:block;opacity:.65;font-size:.68rem;margin-top:3px}
+.bub.mine{align-self:flex-end;background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pri) 65%,#000));color:#fff;border-bottom-right-radius:5px}
+.bub.theirs{align-self:flex-start;background:var(--bg);border:1px solid var(--bd);border-bottom-left-radius:5px}
+.th{cursor:pointer}
+nav{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(440px,calc(100% - 24px));display:flex;gap:4px;padding:6px;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:26px;box-shadow:0 16px 44px rgba(0,0,0,.22);z-index:50}
+nav a{flex:1;text-align:center;padding:8px 4px;border-radius:20px;color:var(--mut);text-decoration:none;font-size:.78rem;font-weight:600;transition:.2s}
+nav a i{display:block;font-style:normal;font-size:1.3rem;line-height:1.2}
+nav a.on{background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pri) 65%,#000));color:#fff;box-shadow:0 8px 18px color-mix(in srgb,var(--pri) 40%,transparent)}
 footer{text-align:center;color:var(--mut);font-size:.85rem;padding:10px 16px 30px}
 footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+.hide{display:none!important}
 </style>
 </head>
 <body>
@@ -71,23 +92,23 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
 <main>
 
 <div id="customer">
+<section class="pg" id="pgOrder">
   <div id="noticeBox" class="notice hide"></div>
 
   <div class="card" id="orderCard">
     <h2>নতুন অর্ডার</h2>
     <p class="sub">৩টি সহজ ধাপে কাজ জমা দিন</p>
 
-    <div class="step"><i>১</i> কাজের ধরন বাছাই করুন</div>
-    <div class="svc" id="svcList"></div>
-
-    <div class="step"><i>২</i> আপনার তথ্য ও ছবি</div>
+    <div class="step"><i>১</i> আপনার তথ্য</div>
     <label>নাম</label><input id="name" autocomplete="name">
     <label>মোবাইল নম্বর</label><input id="phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" autocomplete="tel">
-    <label>ছবি / কাগজ (ছবি বা PDF, সর্বোচ্চ ৫MB)</label>
-    <label class="drop" id="drop"><span id="dropTxt">📎 এখানে ট্যাপ করে ফাইল বাছাই করুন</span><input id="file" type="file" accept="image/*,.pdf"></label>
-    <label>অতিরিক্ত তথ্য (ঐচ্ছিক)</label><textarea id="note" rows="2"></textarea>
 
-    <div class="step"><i>৩</i> পেমেন্ট</div>
+    <div class="step"><i>২</i> কাজসমূহ ও ফাইল</div>
+    <div id="items"></div>
+    <button class="sec" id="addItem" type="button">+ আরেকটি কাজ যোগ করুন</button>
+
+    <div class="step"><i>৩</i> পেমেন্ট (একবারে সব টাকা)</div>
+    <div id="summary" class="pay" style="margin-bottom:0"></div>
     <div class="pay">
       <div id="payType" class="sub" style="margin:0"></div>
       <div class="num" id="payNum"></div>
@@ -105,9 +126,12 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
     <p class="sub">আপনার অর্ডার কোডটি লিখে বা কপি করে রাখুন</p>
     <div class="code" id="doneCode"></div>
     <button class="sec" id="copyCode">কোড কপি</button>
+    <a class="btn" href="#download">📥 অবস্থা / ডাউনলোড পেজে যান</a>
     <button id="newOrder">আরেকটি অর্ডার</button>
   </div>
 
+</section>
+<section class="pg hide" id="pgDownload">
   <div class="card" id="trackCard">
     <h2>অর্ডারের অবস্থা ও ডাউনলোড</h2>
     <p class="sub">কোড ও মোবাইল নম্বর দিয়ে দেখুন</p>
@@ -116,6 +140,34 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
     <button class="sec" id="trackBtn">দেখুন</button>
     <div class="msg" id="trackMsg"></div>
   </div>
+  <div class="card" id="forgotCard">
+    <h2>🔎 অর্ডার নম্বর ভুলে গেছেন?</h2>
+    <p class="sub">অর্ডার করার সময়ের মোবাইল নম্বর ও অর্ডারের তারিখ দিন</p>
+    <label>মোবাইল নম্বর</label><input id="fgPhone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX">
+    <label>অর্ডারের তারিখ</label><input id="fgDate" type="date">
+    <button class="sec" id="fgBtn">অর্ডার নম্বর খুঁজুন</button>
+    <div class="msg" id="fgMsg"></div>
+    <div id="fgList"></div>
+  </div>
+</section>
+<section class="pg hide" id="pgContact">
+  <div class="card">
+    <h2>যোগাযোগ করুন</h2>
+    <p class="sub">সরাসরি কল, SMS বা মেসেজ পাঠান</p>
+    <div class="qgrid" id="quick"></div>
+    <div class="sub" id="shopInfo" style="margin:12px 0 0"></div>
+  </div>
+  <div class="card">
+    <h2>💬 মেসেজ পাঠান</h2>
+    <p class="sub">আপনার প্রশ্ন লিখুন, উত্তর এখানেই পাবেন</p>
+    <div class="chat" id="chatBox"></div>
+    <div class="grid2"><div><label>নাম</label><input id="chatName"></div><div><label>মোবাইল</label><input id="chatPhone" type="tel" inputmode="numeric"></div></div>
+    <label>মেসেজ</label><textarea id="chatText" rows="3"></textarea>
+    <button id="chatSend">মেসেজ পাঠান</button>
+    <button class="sec" id="chatRefresh">উত্তর এসেছে কিনা দেখুন</button>
+    <div class="msg" id="chatMsg"></div>
+  </div>
+</section>
 </div>
 
 <!-- ===== অ্যাডমিন (লিংকের শেষে #admin) ===== -->
@@ -131,6 +183,7 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
   <div id="panel" class="hide">
     <div class="tabs" id="tabs">
       <button data-t="tOrders" class="on">📦 অর্ডার</button>
+      <button data-t="tMsgs" id="msgTab">💬 মেসেজ</button>
       <button data-t="tServices">🛠 সার্ভিস</button>
       <button data-t="tSettings">⚙️ সেটিংস</button>
       <button id="logoutBtn">লগআউট</button>
@@ -140,6 +193,13 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
       <input id="search" placeholder="🔍 কোড, নাম, ফোন বা TrxID দিয়ে খুঁজুন">
       <div class="fl" id="filters"></div>
       <div id="orders"></div>
+    </div>
+
+    <div id="tMsgs" class="card hide">
+      <h2>গ্রাহকের মেসেজ</h2>
+      <p class="sub">ট্যাপ করে খুলুন, উত্তর লিখে পাঠান। গ্রাহক যোগাযোগ পেজে উত্তর দেখবে।</p>
+      <button class="sec sm" id="reloadMsgs">রিফ্রেশ</button>
+      <div id="msgList"></div>
     </div>
 
     <div id="tServices" class="card hide">
@@ -161,6 +221,11 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
 
 </main>
 <footer id="foot"></footer>
+<nav id="nav">
+  <a href="#order" data-p="order"><i>🛒</i>অর্ডার</a>
+  <a href="#download" data-p="download"><i>📥</i>ডাউনলোড</a>
+  <a href="#contact" data-p="contact"><i>💬</i>যোগাযোগ</a>
+</nav>
 
 <script>
 // ===== শুধু এই ২টি লাইন একবার বদলাতে হবে। বাকি সব অ্যাডমিন প্যানেল থেকে =====
@@ -186,7 +251,7 @@ async function loadSite(){
   ]);
   S = {}; (a.data || []).forEach(r => S[r.key] = r.value || "");
   SVC = b.data || [];
-  applySite();
+  applySite(); renderContact();
 }
 
 function applySite(){
@@ -201,72 +266,186 @@ function applySite(){
   $("payNote").textContent = S.pay_note || "";
   const w = (S.whatsapp || "").replace(/\D/g, "");
   $("foot").innerHTML = `<div class="ct">${S.phone ? `<a href="tel:${esc(S.phone)}">📞 ${esc(S.phone)}</a>` : ""}${w ? `<a href="https://wa.me/${w}" target="_blank">💬 WhatsApp</a>` : ""}</div>${S.address ? esc(S.address) + "<br>" : ""}${S.hours ? esc(S.hours) + "<br>" : ""}© ${esc(name)}`;
-  $("svcList").innerHTML = SVC.map((s, i) => `<label><input type="radio" name="svc" value="${i}"><span>${esc(s.name)}${s.description ? `<small>${esc(s.description)}</small>` : ""}</span><b>৳${bn(s.price)}</b></label>`).join("") || '<p class="sub">কোনো সার্ভিস নেই।</p>';
-  document.querySelectorAll('input[name=svc]').forEach(r => r.onchange = () => { sel = SVC[+r.value]; $("total").textContent = "৳" + bn(sel.price); });
-  sel = null; $("total").textContent = "৳০";
+  if(!cart.length) cart = [newItem()]; else cart.forEach(it => { if(it.s >= SVC.length) it.s = 0; });
+  renderCart();
 }
 
 $("copyNum").onclick = () => { copy(S.pay_number || ""); $("copyNum").textContent = "কপি হয়েছে ✓"; setTimeout(() => $("copyNum").textContent = "নম্বর কপি", 1500); };
-$("file").onchange = () => { const f = $("file").files[0]; $("dropTxt").textContent = f ? "✅ " + f.name : "📎 এখানে ট্যাপ করে ফাইল বাছাই করুন"; };
-
 function newCode(){
   const c = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   return Array.from(crypto.getRandomValues(new Uint8Array(6)), b => c[b % c.length]).join("");
 }
 
+let cart = [];
+const newItem = () => ({s: 0, files: [], note: ""});
+const MAXF = 5, MAXMB = 5, MAXITEMS = 10;
+const price = it => Number(SVC[it.s]?.price || 0);
+
+function updateTotal(){
+  const sum = cart.reduce((a, it) => a + price(it), 0);
+  $("total").textContent = "৳" + bn(sum);
+  $("summary").innerHTML = cart.map((it, i) => `<div class="sl"><span>${bn(i + 1)}. ${esc(SVC[it.s]?.name || "")}</span><span>৳${bn(price(it))}</span></div>`).join("");
+  return sum;
+}
+
+function renderCart(){
+  const box = $("items");
+  box.innerHTML = cart.map((it, i) => `<div class="item">
+    <div class="ih"><b>কাজ ${bn(i + 1)}</b>${cart.length > 1 ? `<button type="button" class="x" data-rm="${i}">✕ বাদ দিন</button>` : ""}</div>
+    <select data-s="${i}">${SVC.map((s, k) => `<option value="${k}" ${k === it.s ? "selected" : ""}>${esc(s.name)} – ৳${bn(s.price)}</option>`).join("")}</select>
+    <div class="fchips">${it.files.map((f, j) => `<span class="fc">📎 ${esc(f.name)}<u data-df="${i}:${j}">✕</u></span>`).join("")}</div>
+    <label class="drop"><span>📎 ফাইল / ছবি যোগ করুন (সর্বোচ্চ ${bn(MAXF)}টি)</span><input type="file" multiple accept="image/*,.pdf" data-f="${i}"></label>
+    <input data-n="${i}" placeholder="এই কাজের অতিরিক্ত তথ্য (ঐচ্ছিক)" value="${esc(it.note)}">
+  </div>`).join("");
+  box.querySelectorAll("[data-rm]").forEach(b => b.onclick = () => { cart.splice(+b.dataset.rm, 1); renderCart(); });
+  box.querySelectorAll("select[data-s]").forEach(el => el.onchange = () => { cart[+el.dataset.s].s = +el.value; updateTotal(); });
+  box.querySelectorAll("input[data-n]").forEach(el => el.oninput = () => { cart[+el.dataset.n].note = el.value; });
+  box.querySelectorAll("input[data-f]").forEach(el => el.onchange = () => {
+    const it = cart[+el.dataset.f];
+    for(const f of el.files){
+      if(f.size > MAXMB * 1024 * 1024){ setMsg("orderMsg", `"${f.name}" ৫MB এর বেশি, বাদ দেওয়া হয়েছে।`, true); continue; }
+      if(it.files.length >= MAXF){ setMsg("orderMsg", "একটি কাজে সর্বোচ্চ ৫টি ফাইল দেওয়া যাবে।", true); break; }
+      it.files.push(f);
+    }
+    renderCart();
+  });
+  box.querySelectorAll("[data-df]").forEach(el => el.onclick = () => { const [i, j] = el.dataset.df.split(":").map(Number); cart[i].files.splice(j, 1); renderCart(); });
+  updateTotal();
+}
+$("addItem").onclick = () => { if(cart.length >= MAXITEMS) return setMsg("orderMsg", "একবারে সর্বোচ্চ ১০টি কাজ দেওয়া যাবে।", true); cart.push(newItem()); renderCart(); };
+
 $("orderBtn").onclick = async () => {
-  const name = $("name").value.trim(), phone = normPhone($("phone").value.trim()),
-        trx = $("trx").value.trim().toUpperCase(), file = $("file").files[0];
-  if(!sel) return setMsg("orderMsg", "কাজের ধরন বাছাই করুন।", true);
+  const name = $("name").value.trim(), phone = normPhone($("phone").value.trim()), trx = $("trx").value.trim().toUpperCase();
+  if(!SVC.length) return setMsg("orderMsg", "এখন কোনো সার্ভিস চালু নেই।", true);
   if(!name || !/^01\d{9}$/.test(phone)) return setMsg("orderMsg", "নাম ও সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন।", true);
-  if(!file) return setMsg("orderMsg", "ছবি বা ফাইল আপলোড করুন।", true);
-  if(file.size > 5 * 1024 * 1024) return setMsg("orderMsg", "ফাইল ৫MB এর বেশি হবে না।", true);
+  const bad = cart.findIndex(it => !it.files.length);
+  if(bad >= 0) return setMsg("orderMsg", `কাজ ${bn(bad + 1)} এর জন্য কমপক্ষে ১টি ফাইল দিন।`, true);
   if(trx.length < 6) return setMsg("orderMsg", "সঠিক TrxID দিন।", true);
-  $("orderBtn").disabled = true; setMsg("orderMsg", "জমা হচ্ছে, অপেক্ষা করুন...");
-  const code = newCode(), path = `${code}/${crypto.randomUUID()}.${ext(file)}`;
-  const up = await sb.storage.from("uploads").upload(path, file);
-  if(up.error){ $("orderBtn").disabled = false; return setMsg("orderMsg", "ফাইল আপলোড হয়নি, আবার চেষ্টা করুন।", true); }
-  const ins = await sb.from("orders").insert({code, name, phone, service: sel.name, price: sel.price, trx_id: trx, note: $("note").value.trim(), image_path: path});
+  $("orderBtn").disabled = true;
+  const code = newCode(), id = crypto.randomUUID(), total = cart.reduce((a, it) => a + price(it), 0);
+  const totalFiles = cart.reduce((a, it) => a + it.files.length, 0); let n = 0; const rows = [];
+  try{
+    for(let i = 0; i < cart.length; i++){
+      const it = cart[i], paths = [];
+      for(const f of it.files){
+        setMsg("orderMsg", `ফাইল আপলোড হচ্ছে ${bn(++n)}/${bn(totalFiles)}... অপেক্ষা করুন`);
+        const p = `${code}/${i + 1}-${crypto.randomUUID()}.${ext(f)}`;
+        const r = await sb.storage.from("uploads").upload(p, f);
+        if(r.error) throw r.error;
+        paths.push(p);
+      }
+      rows.push({order_id: id, service: SVC[it.s].name, price: SVC[it.s].price, note: it.note.trim(), files: paths, pos: i});
+    }
+    const cnt = {}; cart.forEach(it => { const k = SVC[it.s].name; cnt[k] = (cnt[k] || 0) + 1; });
+    const summary = Object.entries(cnt).map(([k, v]) => v > 1 ? `${k} ×${v}` : k).join(", ");
+    const a = await sb.from("orders").insert({id, code, name, phone, service: summary, price: total, trx_id: trx});
+    if(a.error) throw a.error;
+    const b = await sb.from("order_items").insert(rows);
+    if(b.error) throw b.error;
+  }catch(e){ $("orderBtn").disabled = false; return setMsg("orderMsg", "অর্ডার জমা হয়নি, ইন্টারনেট দেখে আবার চেষ্টা করুন।", true); }
   $("orderBtn").disabled = false;
-  if(ins.error) return setMsg("orderMsg", "অর্ডার জমা হয়নি, আবার চেষ্টা করুন।", true);
   try{ localStorage.setItem("lastOrder", JSON.stringify({code, phone})); }catch(e){}
   $("doneCode").textContent = code; $("orderCard").classList.add("hide"); $("doneCard").classList.remove("hide");
   $("tcode").value = code; $("tphone").value = phone; setMsg("orderMsg", "");
   scrollTo({top: 0, behavior: "smooth"});
 };
 $("copyCode").onclick = () => { copy($("doneCode").textContent); $("copyCode").textContent = "কপি হয়েছে ✓"; };
-$("newOrder").onclick = () => { ["name","phone","trx","note"].forEach(i => $(i).value = ""); $("file").value = ""; $("dropTxt").textContent = "📎 এখানে ট্যাপ করে ফাইল বাছাই করুন"; document.querySelectorAll('input[name=svc]').forEach(r => r.checked = false); sel = null; $("total").textContent = "৳০"; $("doneCard").classList.add("hide"); $("orderCard").classList.remove("hide"); $("copyCode").textContent = "কোড কপি"; };
+$("newOrder").onclick = () => {
+  ["name", "phone", "trx"].forEach(i => $(i).value = "");
+  cart = [newItem()]; renderCart();
+  $("doneCard").classList.add("hide"); $("orderCard").classList.remove("hide"); $("copyCode").textContent = "কোড কপি";
+};
 
 try{ const l = JSON.parse(localStorage.getItem("lastOrder") || "null"); if(l){ $("tcode").value = l.code; $("tphone").value = l.phone; } }catch(e){}
 
 $("trackBtn").onclick = async () => {
   const code = $("tcode").value.trim(), phone = normPhone($("tphone").value.trim());
   if(!code || !phone) return setMsg("trackMsg", "কোড ও ফোন নম্বর দিন।", true);
-  const {data, error} = await sb.rpc("track_order", {p_code: code, p_phone: phone});
-  if(error || !data || !data.length) return setMsg("trackMsg", "কোনো অর্ডার পাওয়া যায়নি। কোড ও নম্বর মিলিয়ে দেখুন।", true);
-  const o = data[0], el = $("trackMsg"); el.className = "msg";
+  const [a, b] = await Promise.all([sb.rpc("track_order", {p_code: code, p_phone: phone}), sb.rpc("track_items", {p_code: code, p_phone: phone})]);
+  if(a.error || !a.data || !a.data.length) return setMsg("trackMsg", "কোনো অর্ডার পাওয়া যায়নি। কোড ও নম্বর মিলিয়ে দেখুন।", true);
+  const o = a.data[0], items = b.data || [], el = $("trackMsg"); el.className = "msg";
+  const head = o.status === "rejected" ? "❌ অর্ডারটি বাতিল হয়েছে।" : o.status === "done" ? "✅ সব কাজ সম্পন্ন!" : o.status === "processing" ? "🔵 পেমেন্ট যাচাই হয়েছে, কাজ চলছে।" : "🟡 পেমেন্ট যাচাইয়ের অপেক্ষায়।";
   const extra = o.admin_note ? `<br><span class="sub">বার্তা: ${esc(o.admin_note)}</span>` : "";
-  if(o.status === "done" && o.result_path){
-    const url = sb.storage.from("results").getPublicUrl(o.result_path).data.publicUrl;
-    el.innerHTML = `✅ ${esc(o.service)} – কাজ সম্পন্ন।${extra}<button onclick="window.open('${url}','_blank')">📥 ডাউনলোড করুন</button>`;
-  } else if(o.status === "rejected") el.innerHTML = `❌ অর্ডারটি বাতিল হয়েছে।${extra}`;
-  else if(o.status === "processing") el.innerHTML = `🔵 ${esc(o.service)} – কাজ চলছে। পেমেন্ট যাচাই হয়েছে।${extra}`;
-  else el.innerHTML = `🟡 ${esc(o.service)} – পেমেন্ট যাচাইয়ের অপেক্ষায়।${extra}`;
+  const list = items.map((it, i) => {
+    const links = (it.result_files || []).map((p, j) => `<a class="btn" href="${sb.storage.from("results").getPublicUrl(p).data.publicUrl}" target="_blank" download>📥 ফাইল ${bn(j + 1)} ডাউনলোড</a>`).join("");
+    return `<div class="row"><b>${bn(i + 1)}. ${esc(it.service)}</b> <span class="badge ${it.done ? "done" : ""}">${it.done ? "সম্পন্ন" : "চলছে"}</span>${links}</div>`;
+  }).join("");
+  el.innerHTML = head + extra + list;
 };
+
+// ================= অর্ডার নম্বর খোঁজা =================
+$("fgDate").value = $("fgDate").max = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const FGST = {pending: "অপেক্ষায়", processing: "চলছে", done: "সম্পন্ন", rejected: "বাতিল"};
+$("fgBtn").onclick = async () => {
+  const phone = normPhone($("fgPhone").value.trim()), date = $("fgDate").value;
+  $("fgList").innerHTML = "";
+  if(!/^01\d{9}$/.test(phone) || !date) return setMsg("fgMsg", "সঠিক মোবাইল নম্বর ও তারিখ দিন।", true);
+  setMsg("fgMsg", "খোঁজা হচ্ছে...");
+  const {data, error} = await sb.rpc("find_orders", {p_phone: phone, p_date: date});
+  if(error) return setMsg("fgMsg", "খোঁজা যায়নি, আবার চেষ্টা করুন।", true);
+  if(!data || !data.length) return setMsg("fgMsg", "ওই নম্বরে ওই তারিখে কোনো অর্ডার পাওয়া যায়নি।", true);
+  setMsg("fgMsg", `${bn(data.length)}টি অর্ডার পাওয়া গেছে:`);
+  $("fgList").innerHTML = data.map(o => `<div class="row"><b style="font-size:1.3rem;letter-spacing:4px">${esc(o.code)}</b> <span class="badge ${esc(o.status)}">${FGST[o.status] || esc(o.status)}</span>
+    <div class="sub" style="margin:0">${new Date(o.created_at).toLocaleTimeString("bn-BD", {hour: "2-digit", minute: "2-digit"})} · ${esc(o.service)}</div>
+    <button class="sm sec use" data-c="${esc(o.code)}" data-p="${esc(phone)}">এই অর্ডার দেখুন</button></div>`).join("");
+  $("fgList").querySelectorAll(".use").forEach(b => b.onclick = () => {
+    $("tcode").value = b.dataset.c; $("tphone").value = b.dataset.p; $("trackBtn").click();
+    $("trackCard").scrollIntoView({behavior: "smooth"});
+  });
+};
+
+// ================= যোগাযোগ =================
+const safeUrl = u => /^https?:\/\//i.test(u || "") ? esc(u) : "";
+function renderContact(){
+  const ph = (S.phone || "").trim(), w = (S.whatsapp || "").replace(/\D/g, ""), b = [];
+  if(ph){ b.push(`<a class="qc" href="tel:${esc(ph)}"><i>📞</i>কল করুন</a>`, `<a class="qc" href="sms:${esc(ph)}"><i>✉️</i>SMS পাঠান</a>`); }
+  if(w) b.push(`<a class="qc" href="https://wa.me/${w}" target="_blank"><i>🟢</i>WhatsApp</a>`);
+  if(S.email) b.push(`<a class="qc" href="mailto:${esc(S.email)}"><i>📧</i>ইমেইল</a>`);
+  if(safeUrl(S.facebook)) b.push(`<a class="qc" href="${safeUrl(S.facebook)}" target="_blank"><i>📘</i>Facebook</a>`);
+  if(safeUrl(S.map)) b.push(`<a class="qc" href="${safeUrl(S.map)}" target="_blank"><i>📍</i>মানচিত্র</a>`);
+  $("quick").innerHTML = b.join("") || '<p class="sub">যোগাযোগের তথ্য এখনো দেওয়া হয়নি।</p>';
+  $("shopInfo").innerHTML = [S.address ? "📍 " + esc(S.address) : "", S.hours ? "🕒 " + esc(S.hours) : ""].filter(Boolean).join("<br>");
+}
+const getThread = () => { try{ return JSON.parse(localStorage.getItem("thread") || "null"); }catch(e){ return null; } };
+async function loadThread(){
+  const t = getThread();
+  if(t){ if(!$("chatName").value) $("chatName").value = t.name || ""; if(!$("chatPhone").value) $("chatPhone").value = t.phone; }
+  if(!t){ $("chatBox").innerHTML = '<p class="sub">এখনো কোনো মেসেজ নেই। নিচে লিখে পাঠান।</p>'; return; }
+  const {data} = await sb.rpc("get_thread", {p_code: t.code, p_phone: t.phone});
+  $("chatBox").innerHTML = (data || []).map(m => `<div class="bub ${m.from_admin ? "theirs" : "mine"}">${esc(m.body)}<small>${m.from_admin ? "দোকান · " : ""}${new Date(m.created_at).toLocaleString("bn-BD")}</small></div>`).join("");
+  $("chatBox").scrollTop = $("chatBox").scrollHeight;
+}
+$("chatRefresh").onclick = loadThread;
+$("chatSend").onclick = async () => {
+  const name = $("chatName").value.trim(), phone = normPhone($("chatPhone").value.trim()), body = $("chatText").value.trim();
+  if(!name || !/^01\d{9}$/.test(phone) || !body) return setMsg("chatMsg", "নাম, সঠিক মোবাইল নম্বর ও মেসেজ লিখুন।", true);
+  const t = getThread(), code = t && t.phone === phone ? t.code : newCode();
+  $("chatSend").disabled = true;
+  const {error} = await sb.rpc("send_message", {p_code: code, p_name: name, p_phone: phone, p_body: body});
+  $("chatSend").disabled = false;
+  if(error) return setMsg("chatMsg", "পাঠানো যায়নি, আবার চেষ্টা করুন।", true);
+  try{ localStorage.setItem("thread", JSON.stringify({code, phone, name})); }catch(e){}
+  $("chatText").value = ""; setMsg("chatMsg", "পাঠানো হয়েছে ✓ উত্তর এলে এখানে দেখতে পাবেন।"); loadThread();
+};
+setInterval(() => { if(location.hash === "#contact" && getThread()) loadThread(); }, 15000);
 
 // ================= অ্যাডমিন =================
 const SETFIELDS = [
   ["shop_name","দোকানের নাম"],["tagline","ট্যাগলাইন"],["pay_type","পেমেন্ট মাধ্যম (যেমন: bKash Send Money)"],
   ["pay_number","পেমেন্ট নম্বর"],["pay_note","পেমেন্টের নির্দেশনা"],["notice","নোটিশ (ফাঁকা রাখলে দেখাবে না)"],
   ["phone","ফোন নম্বর"],["whatsapp","WhatsApp নম্বর (দেশকোড সহ, যেমন 8801XXXXXXXXX)"],
-  ["address","ঠিকানা"],["hours","খোলার সময়"],["accent","মূল রং"]
+  ["address","ঠিকানা"],["hours","খোলার সময়"],["email","ইমেইল"],["facebook","Facebook পেজের লিংক (https://...)"],["map","Google Maps লিংক (https://...)"],["accent","মূল রং"]
 ];
 let ALL = [], filter = "all";
 
+const PAGES = {order: "pgOrder", download: "pgDownload", contact: "pgContact"};
 function route(){
-  const adm = location.hash === "#admin";
-  $("customer").classList.toggle("hide", adm); $("admin").classList.toggle("hide", !adm);
-  if(adm) checkSession();
+  const h = location.hash.replace("#", ""), adm = h === "admin", pg = PAGES[h] ? h : "order";
+  $("customer").classList.toggle("hide", adm); $("admin").classList.toggle("hide", !adm); $("nav").classList.toggle("hide", adm);
+  Object.entries(PAGES).forEach(([k, id]) => $(id).classList.toggle("hide", k !== pg));
+  document.querySelectorAll("#nav a").forEach(x => x.classList.toggle("on", x.dataset.p === pg));
+  if(adm) checkSession(); else if(pg === "contact") loadThread();
+  scrollTo(0, 0);
 }
 addEventListener("hashchange", route);
 
@@ -274,7 +453,7 @@ async function checkSession(){
   const {data} = await sb.auth.getSession();
   const on = !!data.session;
   $("loginBox").classList.toggle("hide", on); $("panel").classList.toggle("hide", !on);
-  if(on){ loadOrders(); loadSvcAdmin(); buildSettings(); }
+  if(on){ loadOrders(); loadMsgs(); loadSvcAdmin(); buildSettings(); }
 }
 $("loginBtn").onclick = async () => {
   const {error} = await sb.auth.signInWithPassword({email: $("aemail").value.trim(), password: $("apass").value});
@@ -284,13 +463,13 @@ $("loginBtn").onclick = async () => {
 $("logoutBtn").onclick = async () => { await sb.auth.signOut(); checkSession(); };
 document.querySelectorAll("#tabs button[data-t]").forEach(b => b.onclick = () => {
   document.querySelectorAll("#tabs button[data-t]").forEach(x => x.classList.toggle("on", x === b));
-  ["tOrders","tServices","tSettings"].forEach(t => $(t).classList.toggle("hide", t !== b.dataset.t));
+  ["tOrders","tMsgs","tServices","tSettings"].forEach(t => $(t).classList.toggle("hide", t !== b.dataset.t));
 });
 
 // --- অর্ডার ---
 const ST = {all:"সব", pending:"অপেক্ষায়", processing:"চলছে", done:"সম্পন্ন", rejected:"বাতিল"};
 async function loadOrders(){
-  const {data, error} = await sb.from("orders").select("*").order("created_at", {ascending: false});
+  const {data, error} = await sb.from("orders").select("*, order_items(*)").order("created_at", {ascending: false}).order("pos", {referencedTable: "order_items"});
   if(error) return $("orders").textContent = "লোড করা যায়নি।";
   ALL = data; renderOrders();
 }
@@ -301,40 +480,94 @@ async function renderOrders(){
   const q = $("search").value.trim().toLowerCase();
   const list = ALL.filter(o => (filter === "all" || o.status === filter) && (!q || [o.code, o.name, o.phone, o.trx_id].join(" ").toLowerCase().includes(q)));
   const box = $("orders"); box.innerHTML = list.length ? "" : '<p class="sub">কোনো অর্ডার নেই।</p>';
+  const signed = {}, allPaths = list.flatMap(o => (o.order_items || []).flatMap(it => it.files || []));
+  if(allPaths.length){ const r = await sb.storage.from("uploads").createSignedUrls(allPaths, 3600); (r.data || []).forEach(x => { if(x.signedUrl) signed[x.path] = x.signedUrl; }); }
   for(const o of list){
+    const items = o.order_items || [], paths = items.flatMap(it => it.files || []);
     const div = document.createElement("div"); div.className = "row";
-    const url = o.image_path ? (await sb.storage.from("uploads").createSignedUrl(o.image_path, 3600)).data?.signedUrl : "";
+    const itemsHtml = items.map((it, i) => `<div class="item"><b>${bn(i + 1)}. ${esc(it.service)}</b> – ৳${bn(it.price)} <span class="badge ${it.done ? "done" : ""}">${it.done ? "সম্পন্ন" : "বাকি"}</span>
+      ${it.note ? `<br>📝 ${esc(it.note)}` : ""}
+      <br>${(it.files || []).map((p, j) => `<a href="${signed[p] || "#"}" target="_blank">📎 ফাইল ${bn(j + 1)}</a>`).join(" · ")}
+      ${(it.result_files || []).length ? `<br><span class="sub">তৈরি ফাইল আপলোড করা আছে: ${bn(it.result_files.length)}টি (নতুন দিলে যোগ হবে)</span>` : ""}
+      <label>তৈরি কাজের ফাইল (একাধিক দেওয়া যায়)</label><input type="file" class="rf" multiple data-i="${i}">
+      <button class="sm upi" data-i="${i}">✅ আপলোড করে সম্পন্ন করুন</button></div>`).join("");
     div.innerHTML = `<b>${esc(o.code)}</b> <span class="badge ${esc(o.status)}">${ST[o.status] || esc(o.status)}</span>
       <div class="sub" style="margin:2px 0">${new Date(o.created_at).toLocaleString("bn-BD")}</div>
-      <b>${esc(o.service)}</b> – ৳${bn(o.price)}<br>
+      <b>${items.length ? bn(items.length) + "টি কাজ" : esc(o.service)}</b> – মোট ৳${bn(o.price)}<br>
       👤 ${esc(o.name)} · <a href="tel:${esc(o.phone)}">${esc(o.phone)}</a><br>
-      TrxID: <b>${esc(o.trx_id)}</b><br>
-      ${o.note ? `📝 ${esc(o.note)}<br>` : ""}
-      ${url ? `<a href="${url}" target="_blank">📎 গ্রাহকের ফাইল দেখুন</a><br>` : ""}
+      TrxID: <b>${esc(o.trx_id)}</b>
+      ${itemsHtml}
       <label>গ্রাহককে বার্তা (ঐচ্ছিক)</label><input class="an" value="${esc(o.admin_note)}">
-      <label>তৈরি কাজের ফাইল ${o.result_path ? "(নতুন দিলে বদলে যাবে)" : ""}</label><input type="file" class="rf">
-      <button class="sm up">✅ আপলোড করে সম্পন্ন করুন</button>
-      <button class="sm sec pr">🔵 পেমেন্ট ঠিক আছে</button>
+      <button class="sm pr">🔵 পেমেন্ট ঠিক আছে</button>
+      <button class="sm sec sn">বার্তা সেভ</button>
       <button class="sm sec rj">বাতিল</button>
       <button class="sm danger dl">মুছুন</button>`;
     const upd = async patch => { const r = await sb.from("orders").update(patch).eq("id", o.id); if(r.error) alert("সেভ হয়নি"); loadOrders(); };
     const note = () => div.querySelector(".an").value.trim();
-    div.querySelector(".up").onclick = async () => {
-      const f = div.querySelector(".rf").files[0]; if(!f) return alert("আগে ফাইল বাছাই করুন");
-      const p = `${o.code}/${crypto.randomUUID()}.${ext(f)}`;
-      const r = await sb.storage.from("results").upload(p, f);
-      if(r.error) return alert("আপলোড ব্যর্থ");
-      upd({result_path: p, status: "done", admin_note: note()});
-    };
+    div.querySelectorAll(".upi").forEach(btn => btn.onclick = async () => {
+      const i = +btn.dataset.i, it = items[i], fs = [...div.querySelector(`.rf[data-i="${i}"]`).files];
+      if(!fs.length) return alert("আগে ফাইল বাছাই করুন");
+      btn.disabled = true; btn.textContent = "আপলোড হচ্ছে...";
+      const np = [];
+      for(const f of fs){
+        const p = `${o.code}/${crypto.randomUUID()}.${ext(f)}`;
+        const r = await sb.storage.from("results").upload(p, f);
+        if(r.error){ alert("আপলোড ব্যর্থ"); return loadOrders(); }
+        np.push(p);
+      }
+      const r2 = await sb.from("order_items").update({done: true, result_files: [...(it.result_files || []), ...np]}).eq("id", it.id);
+      if(r2.error){ alert("সেভ হয়নি"); return loadOrders(); }
+      const all = items.every((x, k) => k === i || x.done);
+      upd({status: all ? "done" : (o.status === "pending" ? "processing" : o.status), admin_note: note()});
+    });
     div.querySelector(".pr").onclick = () => upd({status: "processing", admin_note: note()});
+    div.querySelector(".sn").onclick = () => upd({admin_note: note()});
     div.querySelector(".rj").onclick = () => confirm("বাতিল করবেন?") && upd({status: "rejected", admin_note: note()});
     div.querySelector(".dl").onclick = async () => {
       if(!confirm("অর্ডারটি স্থায়ীভাবে মুছবেন?")) return;
-      if(o.image_path) await sb.storage.from("uploads").remove([o.image_path]);
+      if(paths.length) await sb.storage.from("uploads").remove(paths);
       await sb.from("orders").delete().eq("id", o.id); loadOrders();
     };
     box.appendChild(div);
   }
+}
+
+// --- মেসেজ ---
+let MSGS = [], openTh = {};
+$("reloadMsgs").onclick = loadMsgs;
+async function loadMsgs(){
+  const {data, error} = await sb.from("messages").select("*").order("created_at");
+  if(error) return $("msgList").textContent = "লোড করা যায়নি।";
+  MSGS = data; renderMsgs();
+}
+function renderMsgs(){
+  const by = {}; MSGS.forEach(m => (by[m.thread_code] = by[m.thread_code] || []).push(m));
+  const th = Object.entries(by).sort((a, b) => new Date(b[1][b[1].length - 1].created_at) - new Date(a[1][a[1].length - 1].created_at));
+  const unreadAll = MSGS.filter(m => !m.from_admin && !m.is_read).length;
+  $("msgTab").textContent = "💬 মেসেজ" + (unreadAll ? ` (${bn(unreadAll)})` : "");
+  $("msgList").innerHTML = th.length ? "" : '<p class="sub">কোনো মেসেজ নেই।</p>';
+  th.forEach(([code, ms]) => {
+    const first = ms.find(m => !m.from_admin) || ms[0], last = ms[ms.length - 1], unread = ms.filter(m => !m.from_admin && !m.is_read).length;
+    const d = document.createElement("div"); d.className = "row";
+    d.innerHTML = `<div class="th"><b>${esc(first.name || "")}</b> · ${esc(first.phone)} ${unread ? `<span class="badge">নতুন ${bn(unread)}</span>` : ""}<div class="sub" style="margin:0">${esc(last.body.slice(0, 70))}</div></div>
+      <div class="tb ${openTh[code] ? "" : "hide"}">
+        <div class="chat" style="margin-top:10px">${ms.map(m => `<div class="bub ${m.from_admin ? "mine" : "theirs"}">${esc(m.body)}<small>${new Date(m.created_at).toLocaleString("bn-BD")}</small></div>`).join("")}</div>
+        <textarea class="rt" rows="2" placeholder="উত্তর লিখুন"></textarea>
+        <button class="sm rs">উত্তর পাঠান</button>
+        <a class="sm" href="sms:${esc(first.phone)}">✉️ SMS অ্যাপে</a> · <a class="sm" href="tel:${esc(first.phone)}">📞 কল</a>
+      </div>`;
+    const tb = d.querySelector(".tb");
+    d.querySelector(".th").onclick = async () => {
+      tb.classList.toggle("hide"); openTh[code] = !tb.classList.contains("hide");
+      if(openTh[code] && unread){ await sb.from("messages").update({is_read: true}).eq("thread_code", code).eq("from_admin", false); loadMsgs(); }
+    };
+    d.querySelector(".rs").onclick = async () => {
+      const body = d.querySelector(".rt").value.trim(); if(!body) return;
+      const r = await sb.from("messages").insert({thread_code: code, name: first.name, phone: first.phone, body, from_admin: true, is_read: true});
+      if(r.error) return alert("পাঠানো যায়নি"); openTh[code] = true; loadMsgs();
+    };
+    $("msgList").appendChild(d);
+  });
 }
 
 // --- সার্ভিস ---
