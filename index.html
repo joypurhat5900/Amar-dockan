@@ -241,6 +241,7 @@ html[data-theme=paper] main{margin-top:-46px}
   <div id="panel" class="hide">
     <div class="tabs" id="tabs">
       <button data-t="tOrders" class="on">📦 অর্ডার</button>
+      <button data-t="tUsers">👥 ইউজার</button>
       <button data-t="tMsgs" id="msgTab">💬 মেসেজ</button>
       <button data-t="tServices">🛠 সার্ভিস</button>
       <button data-t="tSettings">⚙️ সেটিংস</button>
@@ -251,6 +252,15 @@ html[data-theme=paper] main{margin-top:-46px}
       <input id="search" placeholder="🔍 কোড, নাম, ফোন বা TrxID দিয়ে খুঁজুন">
       <div class="fl" id="filters"></div>
       <div id="orders"></div>
+    </div>
+
+    <div id="tUsers" class="card hide">
+      <h2>ইউজার অ্যাকাউন্ট</h2>
+      <p class="sub">সবার তথ্য, অর্ডারের হিসাব ও পেমেন্ট। ট্যাপ করে খুলুন।</p>
+      <input id="usearch" placeholder="🔍 নাম, ইমেইল বা ফোন দিয়ে খুঁজুন">
+      <div class="sub" id="uSummary" style="margin-top:8px"></div>
+      <button class="sec sm" id="reloadUsers">🔄 রিফ্রেশ</button>
+      <div id="userList"></div>
     </div>
 
     <div id="tMsgs" class="card hide">
@@ -601,7 +611,7 @@ async function checkSession(){
   let on = !!data.session;
   if(on){ const r = await sb.rpc("is_admin"); if(r.error || r.data !== true){ on = false; setMsg("loginMsg", "এই অ্যাকাউন্টের অ্যাডমিন অনুমতি নেই। অ্যাডমিন ইমেইল দিয়ে লগইন করুন।", true); } }
   $("loginBox").classList.toggle("hide", on); $("panel").classList.toggle("hide", !on);
-  if(on){ loadOrders(); loadMsgs(); loadSvcAdmin(); buildSettings(); }
+  if(on){ loadOrders(); loadUsers(); loadMsgs(); loadSvcAdmin(); buildSettings(); }
 }
 $("loginBtn").onclick = async () => {
   const {error} = await sb.auth.signInWithPassword({email: $("aemail").value.trim(), password: $("apass").value});
@@ -611,7 +621,7 @@ $("loginBtn").onclick = async () => {
 $("logoutBtn").onclick = async () => { await sb.auth.signOut(); checkSession(); };
 document.querySelectorAll("#tabs button[data-t]").forEach(b => b.onclick = () => {
   document.querySelectorAll("#tabs button[data-t]").forEach(x => x.classList.toggle("on", x === b));
-  ["tOrders","tMsgs","tServices","tSettings"].forEach(t => $(t).classList.toggle("hide", t !== b.dataset.t));
+  ["tOrders","tUsers","tMsgs","tServices","tSettings"].forEach(t => $(t).classList.toggle("hide", t !== b.dataset.t));
 });
 
 // --- অর্ডার ---
@@ -682,6 +692,88 @@ async function renderOrders(){
     };
     box.appendChild(div);
   }
+}
+
+// --- ইউজার ---
+let UL = [], UORD = [], openUsers = {};
+$("reloadUsers").onclick = loadUsers;
+$("usearch").oninput = renderUsers;
+async function loadUsers(){
+  const [u, o] = await Promise.all([sb.rpc("admin_list_users"), sb.from("orders").select("id,user_id,status,price,order_items(files,result_files)")]);
+  if(u.error) return $("userList").textContent = "লোড করা যায়নি: " + u.error.message + " (setup.sql নতুন করে Run করেছেন?)";
+  UL = u.data || []; UORD = o.data || []; renderUsers();
+}
+function userStats(id){
+  const t = {pending: 0, processing: 0, done: 0, rejected: 0, paid: 0, due: 0, total: 0};
+  UORD.filter(o => o.user_id === id).forEach(o => {
+    t[o.status] = (t[o.status] || 0) + 1; t.total++; const p = Number(o.price || 0);
+    if(o.status === "processing" || o.status === "done") t.paid += p; else if(o.status === "pending") t.due += p;
+  });
+  return t;
+}
+function renderUsers(){
+  const q = $("usearch").value.trim().toLowerCase();
+  const list = UL.filter(u => !q || [u.name, u.email, u.phone].join(" ").toLowerCase().includes(q));
+  $("uSummary").textContent = `মোট ইউজার: ${bn(UL.length)}টি · ব্লক করা: ${bn(UL.filter(u => u.blocked).length)}টি`;
+  const box = $("userList"); box.innerHTML = list.length ? "" : '<p class="sub">কোনো ইউজার নেই।</p>';
+  const fmt = d => d ? new Date(d).toLocaleString("bn-BD") : "—";
+  list.forEach(u => {
+    const s = userStats(u.id), d = document.createElement("div"); d.className = "row";
+    d.innerHTML = `<div class="th"><b>${esc(u.name || "(নাম নেই)")}</b> ${u.is_adm ? '<span class="badge processing">অ্যাডমিন</span>' : ""}${u.blocked ? ' <span class="badge rejected">ব্লক</span>' : ""}
+        <div class="sub" style="margin:0">${esc(u.email)}${u.phone ? " · " + esc(u.phone) : ""}</div>
+        <div class="sub" style="margin:0">📦 ${bn(s.total)}টি অর্ডার · 💰 ৳${bn(s.paid)}</div></div>
+      <div class="tb ${openUsers[u.id] ? "" : "hide"}">
+        <div style="margin-top:10px"><span class="st wait">অপেক্ষায় ${bn(s.pending)}</span><span class="st" style="background:#2563eb22;color:#1d4ed8">চলছে ${bn(s.processing)}</span><span class="st ok2">সফল ${bn(s.done)}</span><span class="st bad">বাতিল ${bn(s.rejected)}</span></div>
+        <div class="pay" style="margin:10px 0">💰 মোট পেমেন্ট (যাচাই হয়েছে): <b>৳${bn(s.paid)}</b><br>⏳ পেমেন্ট যাচাই বাকি: ৳${bn(s.due)}</div>
+        <div class="sub">📅 যোগ দিয়েছেন: ${fmt(u.created_at)}<br>🕒 শেষ লগইন: ${fmt(u.last_sign_in_at)}</div>
+        <label>নাম</label><input class="en" value="${esc(u.name)}">
+        <label>মোবাইল নম্বর</label><input class="ep" type="tel" value="${esc(u.phone)}">
+        <button class="sm su">💾 সংশোধন সেভ</button>
+        <button class="sm sec ov">📦 অর্ডার দেখুন</button>
+        <button class="sm sec rp">🔑 পাসওয়ার্ড রিসেট মেইল</button>
+        ${u.is_adm ? "" : `<button class="sm sec bl">${u.blocked ? "✅ আনব্লক" : "⛔ ব্লক"}</button><button class="sm danger du">🗑 অ্যাকাউন্ট মুছুন</button>`}
+      </div>`;
+    const tb = d.querySelector(".tb");
+    d.querySelector(".th").onclick = () => { tb.classList.toggle("hide"); openUsers[u.id] = !tb.classList.contains("hide"); };
+    d.querySelector(".su").onclick = async () => {
+      const name = d.querySelector(".en").value.trim(), phone = normPhone(d.querySelector(".ep").value.trim());
+      if(phone && !/^01\d{9}$/.test(phone)) return alert("সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন");
+      const r = await sb.rpc("admin_update_user", {p_id: u.id, p_name: name, p_phone: phone});
+      if(r.error) return alert("সেভ হয়নি: " + r.error.message); alert("সেভ হয়েছে ✓"); loadUsers();
+    };
+    d.querySelector(".ov").onclick = () => {
+      $("search").value = u.phone || u.name || u.email; filter = "all";
+      document.querySelector('#tabs button[data-t="tOrders"]').click(); renderOrders();
+    };
+    d.querySelector(".rp").onclick = async () => {
+      if(!confirm(u.email + " ঠিকানায় পাসওয়ার্ড রিসেট লিংক পাঠাবেন?")) return;
+      const r = await sb.auth.resetPasswordForEmail(u.email, {redirectTo: location.origin + location.pathname});
+      alert(r.error ? "পাঠানো যায়নি: " + r.error.message : "রিসেট লিংক পাঠানো হয়েছে ✓");
+    };
+    const bl = d.querySelector(".bl");
+    if(bl) bl.onclick = async () => {
+      if(!confirm(u.blocked ? "আনব্লক করবেন?" : "এই ইউজারকে ব্লক করবেন? সে আর লগইন করতে পারবে না।")) return;
+      const r = await sb.rpc("admin_set_block", {p_id: u.id, p_block: !u.blocked});
+      if(r.error) return alert("হয়নি: " + r.error.message); loadUsers();
+    };
+    const du = d.querySelector(".du");
+    if(du) du.onclick = async () => {
+      if(!confirm(`"${u.name || u.email}" এর অ্যাকাউন্ট স্থায়ীভাবে মুছবেন?`)) return;
+      const withOrders = confirm("এই ইউজারের সব অর্ডার ও ফাইলও মুছবেন?\n\nOK = অর্ডার ও ফাইলসহ মুছুন\nCancel = শুধু অ্যাকাউন্ট মুছুন (অর্ডারের রেকর্ড থাকবে)");
+      if(withOrders){
+        const mine = UORD.filter(o => o.user_id === u.id);
+        const up = mine.flatMap(o => (o.order_items || []).flatMap(i => i.files || []));
+        const rs = mine.flatMap(o => (o.order_items || []).flatMap(i => i.result_files || []));
+        if(up.length) await sb.storage.from("uploads").remove(up);
+        if(rs.length) await sb.storage.from("results").remove(rs);
+        if(mine.length){ const r0 = await sb.from("orders").delete().eq("user_id", u.id); if(r0.error) return alert("অর্ডার মোছা যায়নি"); }
+      }
+      const r = await sb.rpc("admin_delete_user", {p_id: u.id});
+      if(r.error) return alert("মোছা যায়নি: " + r.error.message);
+      delete openUsers[u.id]; loadUsers(); loadOrders();
+    };
+    box.appendChild(d);
+  });
 }
 
 // --- মেসেজ ---
