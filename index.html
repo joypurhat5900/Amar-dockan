@@ -20,7 +20,7 @@ body{margin:0;font-family:"Hind Siliguri","Noto Sans Bengali",system-ui,sans-ser
 .hero p{margin:6px 0 0;opacity:.85}
 .chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
 .chips span{background:#ffffff1c;border:1px solid #ffffff2e;backdrop-filter:blur(6px);padding:4px 12px;border-radius:99px;font-size:.78rem}
-main{max-width:620px;margin:-58px auto 0;padding:0 14px 20px}
+main{max-width:620px;margin:-58px auto 0;padding:0 14px 20px;position:relative;z-index:2}
 .card{background:var(--card);border:1px solid var(--bd);border-radius:var(--r);padding:22px;margin-bottom:16px;box-shadow:var(--sh);animation:up .45s ease both}
 @keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
 .card h2{margin:0 0 4px;font-size:1.18rem;font-weight:700}
@@ -244,6 +244,15 @@ const copy = t => navigator.clipboard?.writeText(t);
 
 let S = {}, SVC = [], sel = null;
 
+const FONTS = {"Hind Siliguri": "wght@400;500;600;700", "Noto Sans Bengali": "wght@400;500;600;700", "Anek Bangla": "wght@400;500;600;700", "Baloo Da 2": "wght@400;500;600;700", "Noto Serif Bengali": "wght@400;500;600;700", "Tiro Bangla": ""};
+function applyFont(name){
+  if(!FONTS.hasOwnProperty(name)) name = "Hind Siliguri";
+  let l = document.getElementById("gf");
+  if(!l){ l = document.createElement("link"); l.id = "gf"; l.rel = "stylesheet"; document.head.appendChild(l); }
+  const w = FONTS[name];
+  l.href = "https://fonts.googleapis.com/css2?family=" + name.replace(/ /g, "+") + (w ? ":" + w : "") + "&display=swap";
+  document.body.style.fontFamily = `"${name}","Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif`;
+}
 async function loadSite(){
   const [a, b] = await Promise.all([
     sb.from("settings").select("*"),
@@ -256,7 +265,7 @@ async function loadSite(){
 
 function applySite(){
   const name = S.shop_name || "আমার দোকান";
-  document.title = name;
+  document.title = name; applyFont(S.font);
   $("shopName").textContent = name;
   $("tagline").textContent = S.tagline || "";
   if(S.accent) document.documentElement.style.setProperty("--pri", S.accent);
@@ -434,7 +443,7 @@ const SETFIELDS = [
   ["shop_name","দোকানের নাম"],["tagline","ট্যাগলাইন"],["pay_type","পেমেন্ট মাধ্যম (যেমন: bKash Send Money)"],
   ["pay_number","পেমেন্ট নম্বর"],["pay_note","পেমেন্টের নির্দেশনা"],["notice","নোটিশ (ফাঁকা রাখলে দেখাবে না)"],
   ["phone","ফোন নম্বর"],["whatsapp","WhatsApp নম্বর (দেশকোড সহ, যেমন 8801XXXXXXXXX)"],
-  ["address","ঠিকানা"],["hours","খোলার সময়"],["email","ইমেইল"],["facebook","Facebook পেজের লিংক (https://...)"],["map","Google Maps লিংক (https://...)"],["accent","মূল রং"]
+  ["address","ঠিকানা"],["hours","খোলার সময়"],["email","ইমেইল"],["facebook","Facebook পেজের লিংক (https://...)"],["map","Google Maps লিংক (https://...)"],["accent","মূল রং"],["font","লেখার ফন্ট"]
 ];
 let ALL = [], filter = "all";
 
@@ -470,7 +479,7 @@ document.querySelectorAll("#tabs button[data-t]").forEach(b => b.onclick = () =>
 const ST = {all:"সব", pending:"অপেক্ষায়", processing:"চলছে", done:"সম্পন্ন", rejected:"বাতিল"};
 async function loadOrders(){
   const {data, error} = await sb.from("orders").select("*, order_items(*)").order("created_at", {ascending: false}).order("pos", {referencedTable: "order_items"});
-  if(error) return $("orders").textContent = "লোড করা যায়নি।";
+  if(error) return $("orders").textContent = "লোড করা যায়নি: " + error.message;
   ALL = data; renderOrders();
 }
 $("search").oninput = renderOrders;
@@ -537,7 +546,7 @@ let MSGS = [], openTh = {};
 $("reloadMsgs").onclick = loadMsgs;
 async function loadMsgs(){
   const {data, error} = await sb.from("messages").select("*").order("created_at");
-  if(error) return $("msgList").textContent = "লোড করা যায়নি।";
+  if(error) return $("msgList").textContent = "লোড করা যায়নি: " + error.message;
   MSGS = data; renderMsgs();
 }
 function renderMsgs(){
@@ -599,10 +608,13 @@ $("addSvc").onclick = async () => {
 // --- সেটিংস ---
 async function buildSettings(){
   const {data} = await sb.from("settings").select("*"); const cur = {}; (data || []).forEach(r => cur[r.key] = r.value || "");
-  $("setForm").innerHTML = SETFIELDS.map(([k, l]) => `<label>${l}</label><input data-k="${k}" ${k === "accent" ? 'type="color" style="height:46px;padding:4px"' : ""} value="${esc(cur[k] || (k === "accent" ? "#0f766e" : ""))}">`).join("");
+  $("setForm").innerHTML = SETFIELDS.map(([k, l]) => k === "font"
+    ? `<label>${l}</label><select data-k="font">${Object.keys(FONTS).map(f => `<option ${(cur.font || "Hind Siliguri") === f ? "selected" : ""}>${f}</option>`).join("")}</select>`
+    : `<label>${l}</label><input data-k="${k}" ${k === "accent" ? 'type="color" style="height:46px;padding:4px"' : ""} value="${esc(cur[k] || (k === "accent" ? "#0f766e" : ""))}">`).join("");
+  $("setForm").querySelector("select[data-k=font]").onchange = e => applyFont(e.target.value);
 }
 $("saveSet").onclick = async () => {
-  const rows = [...document.querySelectorAll("#setForm input")].map(i => ({key: i.dataset.k, value: i.value.trim()}));
+  const rows = [...document.querySelectorAll("#setForm input, #setForm select")].map(i => ({key: i.dataset.k, value: i.value.trim()}));
   const lf = $("logoFile").files[0];
   if(lf){
     const p = `logo-${Date.now()}.${ext(lf)}`, r = await sb.storage.from("site").upload(p, lf);
