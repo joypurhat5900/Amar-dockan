@@ -136,9 +136,13 @@ html[data-theme=paper] main{margin-top:-46px}
     <h2>নতুন অর্ডার</h2>
     <p class="sub">৩টি সহজ ধাপে কাজ জমা দিন</p>
 
-    <div class="step"><i>১</i> আপনার তথ্য</div>
-    <label>নাম</label><input id="name" autocomplete="name">
-    <label>মোবাইল নম্বর</label><input id="phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" autocomplete="tel">
+    <div class="step"><i>১</i> আপনার অ্যাকাউন্ট</div>
+    <div id="whoLine" class="pay" style="margin-top:0"></div>
+    <div id="needInfo" class="hide">
+      <p class="sub">আপনার অ্যাকাউন্টে নাম বা মোবাইল নম্বর নেই। একবার দিন, পরে আর লাগবে না।</p>
+      <label>নাম</label><input id="name" autocomplete="name">
+      <label>মোবাইল নম্বর</label><input id="phone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX" autocomplete="tel">
+    </div>
 
     <div class="step"><i>২</i> কাজসমূহ ও ফাইল</div>
     <div id="items"></div>
@@ -278,7 +282,7 @@ html[data-theme=paper] main{margin-top:-46px}
 <footer id="foot"></footer>
 <nav id="nav">
   <a href="#order" data-p="order"><i>🛒</i>অর্ডার</a>
-  <a href="#download" data-p="download"><i>📥</i>আমার অর্ডার</a>
+  <a href="#download" data-p="download"><i>📥</i>ডাউনলোড</a>
   <a href="#contact" data-p="contact"><i>💬</i>যোগাযোগ</a>
   <a href="#account" data-p="account"><i>👤</i>অ্যাকাউন্ট</a>
 </nav>
@@ -382,7 +386,7 @@ function renderCart(){
 $("addItem").onclick = () => { if(cart.length >= MAXITEMS) return setMsg("orderMsg", "একবারে সর্বোচ্চ ১০টি কাজ দেওয়া যাবে।", true); cart.push(newItem()); renderCart(); };
 
 $("orderBtn").onclick = async () => {
-  const name = $("name").value.trim(), phone = normPhone($("phone").value.trim()), trx = $("trx").value.trim().toUpperCase();
+  const m = md(), name = (m.name || $("name").value).trim(), phone = normPhone((m.phone || $("phone").value).trim()), trx = $("trx").value.trim().toUpperCase();
   if(!USER) return setMsg("orderMsg", "অর্ডার করতে আগে লগইন করুন।", true);
   if(!SVC.length) return setMsg("orderMsg", "এখন কোনো সার্ভিস চালু নেই।", true);
   if(!name || !/^01\d{9}$/.test(phone)) return setMsg("orderMsg", "নাম ও সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন।", true);
@@ -412,7 +416,7 @@ $("orderBtn").onclick = async () => {
     if(b.error) throw b.error;
   }catch(e){ $("orderBtn").disabled = false; return setMsg("orderMsg", "অর্ডার জমা হয়নি, ইন্টারনেট দেখে আবার চেষ্টা করুন।", true); }
   $("orderBtn").disabled = false;
-  try{ localStorage.setItem("lastOrder", JSON.stringify({code, phone})); }catch(e){}
+  if(!md().name || !md().phone) sb.auth.updateUser({data: {name, phone}});
   $("doneCode").textContent = code; $("orderCard").classList.add("hide"); $("doneCard").classList.remove("hide");
   setMsg("orderMsg", "");
   scrollTo({top: 0, behavior: "smooth"});
@@ -436,8 +440,9 @@ function renderAuth(){
   if(on){
     $("pfName").textContent = "👋 " + (md().name || "স্বাগতম");
     $("pfInfo").textContent = [USER.email, md().phone].filter(Boolean).join(" · ");
-    if(!$("name").value) $("name").value = md().name || "";
-    if(!$("phone").value) $("phone").value = md().phone || "";
+    const m = md(), has = !!m.name && /^01\d{9}$/.test(m.phone || "");
+    $("whoLine").innerHTML = has ? `👤 <b>${esc(m.name)}</b> · ${esc(m.phone)}<div class="sub" style="margin:2px 0 0">এই তথ্য আপনার অ্যাকাউন্ট থেকে নেওয়া হয়েছে</div>` : "";
+    $("whoLine").classList.toggle("hide", !has); $("needInfo").classList.toggle("hide", has);
   }
 }
 function setMode(m){
