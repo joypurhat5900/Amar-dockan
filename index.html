@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="bn" data-theme="aurora">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -80,6 +80,36 @@ nav a.on{background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pr
 footer{text-align:center;color:var(--mut);font-size:.85rem;padding:10px 16px 30px}
 footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
 .hide{display:none!important}
+
+/* ===== থিম: গ্লাস অরোরা ===== */
+html[data-theme=aurora]{--bg:#eef0ff;--card:rgba(255,255,255,.66);--bd:rgba(255,255,255,.9);--sh:0 20px 50px rgba(90,80,170,.18);--r:28px}
+html[data-theme=aurora] body{background:radial-gradient(800px 560px at 8% -8%,#c7d4ff,transparent),radial-gradient(760px 560px at 100% 6%,#ffd0ea,transparent),radial-gradient(720px 560px at 50% 105%,#b9f2e2,transparent),#f3f1ff;background-attachment:fixed}
+html[data-theme=aurora] .hero{background:none;color:var(--tx);border-radius:0;padding:36px 20px 76px}
+html[data-theme=aurora] .hero::after{display:none}
+html[data-theme=aurora] .hero h1{background:linear-gradient(90deg,var(--pri),#7c3aed 55%,#db2777);-webkit-background-clip:text;background-clip:text;color:transparent}
+html[data-theme=aurora] .hero p{color:var(--mut);opacity:1}
+html[data-theme=aurora] .chips span{background:rgba(255,255,255,.7);border:1px solid #fff;color:var(--tx);box-shadow:0 4px 14px rgba(90,80,170,.12)}
+html[data-theme=aurora] .logo{border-color:#fff}
+html[data-theme=aurora] .card,html[data-theme=aurora] nav{backdrop-filter:blur(20px) saturate(1.5);-webkit-backdrop-filter:blur(20px) saturate(1.5)}
+html[data-theme=aurora] input,html[data-theme=aurora] select,html[data-theme=aurora] textarea{background:rgba(255,255,255,.6);border-color:rgba(120,110,200,.25)}
+html[data-theme=aurora] .item,html[data-theme=aurora] .row{background:rgba(255,255,255,.45)}
+@media(prefers-color-scheme:dark){
+html[data-theme=aurora]{--bg:#0d0f1f;--card:rgba(28,30,58,.6);--bd:rgba(255,255,255,.12);--sh:0 20px 50px rgba(0,0,0,.5)}
+html[data-theme=aurora] body{background:radial-gradient(800px 560px at 8% -8%,#2a3470,transparent),radial-gradient(760px 560px at 100% 6%,#5a1f4a,transparent),radial-gradient(720px 560px at 50% 105%,#0f4a45,transparent),#0b0d1c}
+html[data-theme=aurora] input,html[data-theme=aurora] select,html[data-theme=aurora] textarea{background:rgba(255,255,255,.06)}
+html[data-theme=aurora] .item,html[data-theme=aurora] .row{background:rgba(255,255,255,.04)}
+html[data-theme=aurora] .chips span{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+}
+/* ===== থিম: পেপার (সাদা-ক্রিম) ===== */
+html[data-theme=paper]{--bg:#f8f3ea;--card:#fffdf8;--bd:#e4d9c6;--tx:#2a2017;--mut:#86776a;--sh:0 3px 0 #e4d9c6;--r:16px}
+html[data-theme=paper] .hero{background:var(--card);color:var(--tx);border-radius:0;border-bottom:4px solid var(--pri);padding:30px 20px 72px}
+html[data-theme=paper] .hero::after{display:none}
+html[data-theme=paper] .hero h1{background:none;color:var(--pri)}
+html[data-theme=paper] .hero p{opacity:1;color:var(--mut)}
+html[data-theme=paper] .chips span{background:var(--bg);border:1.5px solid var(--bd);color:var(--tx);backdrop-filter:none}
+html[data-theme=paper] .step i{background:var(--pri);color:#fff;box-shadow:none}
+html[data-theme=paper] main{margin-top:-46px}
+@media(prefers-color-scheme:dark){html[data-theme=paper]{--bg:#16120e;--card:#201a14;--bd:#3b3025;--tx:#f4ebdf;--mut:#a99a8b;--sh:0 3px 0 #2c231b}}
 </style>
 </head>
 <body>
@@ -95,7 +125,12 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
 <section class="pg" id="pgOrder">
   <div id="noticeBox" class="notice hide"></div>
 
-  <div class="card" id="orderCard">
+  <div class="card hide" id="gateCard">
+    <h2>🔐 অর্ডার করতে লগইন করুন</h2>
+    <p class="sub">অর্ডার করতে ও নিজের কাজ দেখতে অ্যাকাউন্ট লাগবে। নতুন হলে ১ মিনিটে খুলে নিন।</p>
+    <a class="btn" href="#account">লগইন / সাইন আপ</a>
+  </div>
+  <div class="card hide" id="orderCard">
     <h2>নতুন অর্ডার</h2>
     <p class="sub">৩টি সহজ ধাপে কাজ জমা দিন</p>
 
@@ -132,6 +167,7 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
 
 </section>
 <section class="pg hide" id="pgDownload">
+  <div class="card" id="myCard"><h2>📦 আমার অর্ডার</h2><div id="myOrders"></div></div>
   <div class="card" id="trackCard">
     <h2>অর্ডারের অবস্থা ও ডাউনলোড</h2>
     <p class="sub">কোড ও মোবাইল নম্বর দিয়ে দেখুন</p>
@@ -168,6 +204,39 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
     <div class="msg" id="chatMsg"></div>
   </div>
 </section>
+<section class="pg hide" id="pgAccount">
+  <div class="card" id="authCard">
+    <h2 id="authTitle">লগইন</h2>
+    <p class="sub" id="authSub">আপনার অ্যাকাউন্টে ঢুকুন</p>
+    <div id="signupOnly" class="hide">
+      <label>নাম</label><input id="uName" autocomplete="name">
+      <label>মোবাইল নম্বর</label><input id="uPhone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX">
+    </div>
+    <label>ইমেইল</label><input id="uEmail" type="email" autocomplete="email">
+    <div id="passWrap"><label>পাসওয়ার্ড (কমপক্ষে ৬ অক্ষর)</label><input id="uPass" type="password" autocomplete="current-password"></div>
+    <button id="authBtn">লগইন করুন</button>
+    <button class="sec" id="authToggle">নতুন অ্যাকাউন্ট খুলুন</button>
+    <button class="sec" id="forgotBtn" style="border-color:transparent">পাসওয়ার্ড ভুলে গেছেন?</button>
+    <div class="msg" id="authMsg"></div>
+  </div>
+  <div class="card hide" id="recoverCard">
+    <h2>🔑 নতুন পাসওয়ার্ড</h2>
+    <p class="sub">নতুন পাসওয়ার্ড দিন (কমপক্ষে ৬ অক্ষর)</p>
+    <label>নতুন পাসওয়ার্ড</label><input id="newPass" type="password" autocomplete="new-password">
+    <label>আবার লিখুন</label><input id="newPass2" type="password" autocomplete="new-password">
+    <button id="savePass">পাসওয়ার্ড সেভ করুন</button>
+    <button class="sec" id="cancelPass">বাতিল</button>
+    <div class="msg" id="recMsg"></div>
+  </div>
+  <div class="card hide" id="profileCard">
+    <h2 id="pfName"></h2>
+    <p class="sub" id="pfInfo"></p>
+    <a class="btn" href="#order">🛒 নতুন অর্ডার করুন</a>
+    <a class="btn" href="#download">📦 আমার অর্ডার দেখুন</a>
+    <button class="sec" id="chgPass">🔑 পাসওয়ার্ড বদলান</button>
+    <button class="sec" id="userLogout">লগআউট</button>
+  </div>
+</section>
 </div>
 
 <!-- ===== অ্যাডমিন (লিংকের শেষে #admin) ===== -->
@@ -199,6 +268,7 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
       <h2>গ্রাহকের মেসেজ</h2>
       <p class="sub">ট্যাপ করে খুলুন, উত্তর লিখে পাঠান। গ্রাহক যোগাযোগ পেজে উত্তর দেখবে।</p>
       <button class="sec sm" id="reloadMsgs">রিফ্রেশ</button>
+      <button class="sm danger" id="delAllMsgs">🗑 সব মেসেজ মুছুন</button>
       <div id="msgList"></div>
     </div>
 
@@ -225,6 +295,7 @@ footer .ct{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bo
   <a href="#order" data-p="order"><i>🛒</i>অর্ডার</a>
   <a href="#download" data-p="download"><i>📥</i>ডাউনলোড</a>
   <a href="#contact" data-p="contact"><i>💬</i>যোগাযোগ</a>
+  <a href="#account" data-p="account"><i>👤</i>অ্যাকাউন্ট</a>
 </nav>
 
 <script>
@@ -253,6 +324,8 @@ function applyFont(name){
   l.href = "https://fonts.googleapis.com/css2?family=" + name.replace(/ /g, "+") + (w ? ":" + w : "") + "&display=swap";
   document.body.style.fontFamily = `"${name}","Hind Siliguri","Noto Sans Bengali",system-ui,sans-serif`;
 }
+const THEMES = {aurora: "গ্লাস অরোরা (রঙিন, নতুন)", navy: "নেভি-গোল্ড (গাঢ়, আগেরটা)", paper: "পেপার (সাদা-ক্রিম)"};
+function applyTheme(t){ document.documentElement.dataset.theme = THEMES[t] ? t : "aurora"; }
 async function loadSite(){
   const [a, b] = await Promise.all([
     sb.from("settings").select("*"),
@@ -265,7 +338,7 @@ async function loadSite(){
 
 function applySite(){
   const name = S.shop_name || "আমার দোকান";
-  document.title = name; applyFont(S.font);
+  document.title = name; applyFont(S.font); applyTheme(S.theme);
   $("shopName").textContent = name;
   $("tagline").textContent = S.tagline || "";
   if(S.accent) document.documentElement.style.setProperty("--pri", S.accent);
@@ -325,6 +398,7 @@ $("addItem").onclick = () => { if(cart.length >= MAXITEMS) return setMsg("orderM
 
 $("orderBtn").onclick = async () => {
   const name = $("name").value.trim(), phone = normPhone($("phone").value.trim()), trx = $("trx").value.trim().toUpperCase();
+  if(!USER) return setMsg("orderMsg", "অর্ডার করতে আগে লগইন করুন।", true);
   if(!SVC.length) return setMsg("orderMsg", "এখন কোনো সার্ভিস চালু নেই।", true);
   if(!name || !/^01\d{9}$/.test(phone)) return setMsg("orderMsg", "নাম ও সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন।", true);
   const bad = cart.findIndex(it => !it.files.length);
@@ -347,7 +421,7 @@ $("orderBtn").onclick = async () => {
     }
     const cnt = {}; cart.forEach(it => { const k = SVC[it.s].name; cnt[k] = (cnt[k] || 0) + 1; });
     const summary = Object.entries(cnt).map(([k, v]) => v > 1 ? `${k} ×${v}` : k).join(", ");
-    const a = await sb.from("orders").insert({id, code, name, phone, service: summary, price: total, trx_id: trx});
+    const a = await sb.from("orders").insert({id, user_id: USER.id, code, name, phone, service: summary, price: total, trx_id: trx});
     if(a.error) throw a.error;
     const b = await sb.from("order_items").insert(rows);
     if(b.error) throw b.error;
@@ -381,6 +455,96 @@ $("trackBtn").onclick = async () => {
   }).join("");
   el.innerHTML = head + extra + list;
 };
+
+// ================= ইউজার অ্যাকাউন্ট =================
+let USER = null, authMode = "login", RECOVERY = false;
+const md = () => (USER && USER.user_metadata) || {};
+function renderAuth(){
+  const on = !!USER;
+  $("gateCard").classList.toggle("hide", on);
+  $("orderCard").classList.toggle("hide", !on || !$("doneCard").classList.contains("hide"));
+  $("authCard").classList.toggle("hide", on || RECOVERY); $("profileCard").classList.toggle("hide", !on || RECOVERY); $("recoverCard").classList.toggle("hide", !(on && RECOVERY));
+  if(on){
+    $("pfName").textContent = "👋 " + (md().name || "স্বাগতম");
+    $("pfInfo").textContent = [USER.email, md().phone].filter(Boolean).join(" · ");
+    if(!$("name").value) $("name").value = md().name || "";
+    if(!$("phone").value) $("phone").value = md().phone || "";
+  }
+}
+function setMode(m){
+  authMode = m; const su = m === "signup", fg = m === "forgot";
+  $("signupOnly").classList.toggle("hide", !su); $("passWrap").classList.toggle("hide", fg);
+  $("authTitle").textContent = su ? "নতুন অ্যাকাউন্ট" : fg ? "পাসওয়ার্ড রিসেট" : "লগইন";
+  $("authSub").textContent = su ? "কয়েকটি তথ্য দিয়ে অ্যাকাউন্ট খুলুন" : fg ? "আপনার ইমেইল দিন, রিসেট লিংক পাঠানো হবে" : "আপনার অ্যাকাউন্টে ঢুকুন";
+  $("authBtn").textContent = su ? "অ্যাকাউন্ট খুলুন" : fg ? "রিসেট লিংক পাঠান" : "লগইন করুন";
+  $("authToggle").textContent = su ? "আগে থেকেই অ্যাকাউন্ট আছে? লগইন" : "নতুন অ্যাকাউন্ট খুলুন";
+  $("authToggle").classList.toggle("hide", fg);
+  $("forgotBtn").textContent = fg ? "← লগইনে ফিরুন" : "পাসওয়ার্ড ভুলে গেছেন?";
+  $("forgotBtn").classList.toggle("hide", su);
+  $("uPass").autocomplete = su ? "new-password" : "current-password";
+  setMsg("authMsg", "");
+}
+$("forgotBtn").onclick = () => setMode(authMode === "forgot" ? "login" : "forgot");
+$("authToggle").onclick = () => setMode(authMode === "signup" ? "login" : "signup");
+$("authBtn").onclick = async () => {
+  const email = $("uEmail").value.trim();
+  if(authMode === "forgot"){
+    if(!email) return setMsg("authMsg", "আপনার ইমেইল দিন।", true);
+    $("authBtn").disabled = true;
+    const {error} = await sb.auth.resetPasswordForEmail(email, {redirectTo: location.origin + location.pathname});
+    $("authBtn").disabled = false;
+    if(error) return setMsg("authMsg", /rate|seconds|limit/i.test(error.message) ? "অনেকবার চেষ্টা হয়েছে, কিছুক্ষণ পর আবার চেষ্টা করুন।" : "লিংক পাঠানো যায়নি: " + error.message, true);
+    return setMsg("authMsg", "এই ইমেইলে অ্যাকাউন্ট থাকলে রিসেট লিংক পাঠানো হয়েছে। ইনবক্স ও স্প্যাম ফোল্ডার দেখুন।");
+  }
+  const password = $("uPass").value;
+  if(!email || password.length < 6) return setMsg("authMsg", "সঠিক ইমেইল ও কমপক্ষে ৬ অক্ষরের পাসওয়ার্ড দিন।", true);
+  $("authBtn").disabled = true;
+  if(authMode === "signup"){
+    const name = $("uName").value.trim(), phone = normPhone($("uPhone").value.trim());
+    if(!name || !/^01\d{9}$/.test(phone)){ $("authBtn").disabled = false; return setMsg("authMsg", "নাম ও সঠিক ১১ ডিজিটের মোবাইল নম্বর দিন।", true); }
+    const {data, error} = await sb.auth.signUp({email, password, options: {data: {name, phone}}});
+    $("authBtn").disabled = false;
+    if(error) return setMsg("authMsg", /registered|exists/i.test(error.message) ? "এই ইমেইলে আগেই অ্যাকাউন্ট আছে, লগইন করুন।" : "অ্যাকাউন্ট খোলা যায়নি: " + error.message, true);
+    if(!data.session) return setMsg("authMsg", "আপনার ইমেইলে একটি যাচাই লিংক পাঠানো হয়েছে। লিংকে চাপ দিয়ে তারপর লগইন করুন।");
+  } else {
+    const {error} = await sb.auth.signInWithPassword({email, password});
+    $("authBtn").disabled = false;
+    if(error) return setMsg("authMsg", "ইমেইল বা পাসওয়ার্ড ভুল।", true);
+  }
+  setMsg("authMsg", "");
+};
+$("userLogout").onclick = () => sb.auth.signOut();
+$("savePass").onclick = async () => {
+  const a = $("newPass").value, b = $("newPass2").value;
+  if(a.length < 6) return setMsg("recMsg", "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।", true);
+  if(a !== b) return setMsg("recMsg", "দুটি পাসওয়ার্ড মেলেনি।", true);
+  const {error} = await sb.auth.updateUser({password: a});
+  if(error) return setMsg("recMsg", "বদলানো যায়নি: " + error.message, true);
+  $("newPass").value = $("newPass2").value = ""; setMsg("recMsg", ""); RECOVERY = false; renderAuth(); alert("পাসওয়ার্ড বদলানো হয়েছে ✓");
+};
+$("cancelPass").onclick = () => { RECOVERY = false; renderAuth(); };
+$("chgPass").onclick = () => { RECOVERY = true; renderAuth(); };
+sb.auth.onAuthStateChange((ev, session) => {
+  const was = !!USER;
+  if(ev === "PASSWORD_RECOVERY"){ RECOVERY = true; location.hash = "#account"; }
+  if(ev === "SIGNED_OUT") RECOVERY = false;
+  USER = session ? session.user : null; renderAuth();
+  if(ev === "SIGNED_IN" && !was && !RECOVERY && location.hash !== "#admin") location.hash = "#order";
+  if(["INITIAL_SESSION", "SIGNED_IN", "SIGNED_OUT", "PASSWORD_RECOVERY", "USER_UPDATED"].includes(ev)) setTimeout(() => { AUTH_READY = true; route(); }, 0);
+});
+
+const MYST = {pending: "অপেক্ষায়", processing: "চলছে", done: "সম্পন্ন", rejected: "বাতিল"};
+async function loadMyOrders(){
+  const box = $("myOrders");
+  if(!USER){ box.innerHTML = '<p class="sub">নিজের সব অর্ডার ও ফাইল এক জায়গায় দেখতে লগইন করুন।</p><a class="btn" href="#account">লগইন / সাইন আপ</a>'; return; }
+  box.innerHTML = '<p class="sub">লোড হচ্ছে...</p>';
+  const {data, error} = await sb.from("orders").select("*, order_items(*)").eq("user_id", USER.id).order("created_at", {ascending: false}).order("pos", {referencedTable: "order_items"});
+  if(error) return box.innerHTML = '<p class="sub err">লোড করা যায়নি।</p>';
+  box.innerHTML = data.length ? data.map(o => `<div class="row"><b style="font-size:1.15rem;letter-spacing:3px">${esc(o.code)}</b> <span class="badge ${esc(o.status)}">${MYST[o.status] || esc(o.status)}</span>
+    <div class="sub" style="margin:0">${new Date(o.created_at).toLocaleString("bn-BD")} · মোট ৳${bn(o.price)}</div>
+    ${o.admin_note ? `<div class="sub">বার্তা: ${esc(o.admin_note)}</div>` : ""}
+    ${(o.order_items || []).map((it, i) => `<div class="item" style="margin:8px 0 0"><b>${bn(i + 1)}. ${esc(it.service)}</b> <span class="badge ${it.done ? "done" : ""}">${it.done ? "সম্পন্ন" : "চলছে"}</span>${(it.result_files || []).map((f, j) => `<a class="btn" href="${sb.storage.from("results").getPublicUrl(f).data.publicUrl}" target="_blank" download>📥 ফাইল ${bn(j + 1)} ডাউনলোড</a>`).join("")}</div>`).join("")}</div>`).join("") : '<p class="sub">এখনো কোনো অর্ডার নেই।</p>';
+}
 
 // ================= অর্ডার নম্বর খোঁজা =================
 $("fgDate").value = $("fgDate").max = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
@@ -418,7 +582,7 @@ function renderContact(){
 const getThread = () => { try{ return JSON.parse(localStorage.getItem("thread") || "null"); }catch(e){ return null; } };
 async function loadThread(){
   const t = getThread();
-  if(t){ if(!$("chatName").value) $("chatName").value = t.name || ""; if(!$("chatPhone").value) $("chatPhone").value = t.phone; }
+  { const m = md(); if(!$("chatName").value) $("chatName").value = (t && t.name) || m.name || ""; if(!$("chatPhone").value) $("chatPhone").value = (t && t.phone) || m.phone || ""; }
   if(!t){ $("chatBox").innerHTML = '<p class="sub">এখনো কোনো মেসেজ নেই। নিচে লিখে পাঠান।</p>'; return; }
   const {data} = await sb.rpc("get_thread", {p_code: t.code, p_phone: t.phone});
   $("chatBox").innerHTML = (data || []).map(m => `<div class="bub ${m.from_admin ? "theirs" : "mine"}">${esc(m.body)}<small>${m.from_admin ? "দোকান · " : ""}${new Date(m.created_at).toLocaleString("bn-BD")}</small></div>`).join("");
@@ -447,20 +611,28 @@ const SETFIELDS = [
 ];
 let ALL = [], filter = "all";
 
-const PAGES = {order: "pgOrder", download: "pgDownload", contact: "pgContact"};
+const PAGES = {order: "pgOrder", download: "pgDownload", contact: "pgContact", account: "pgAccount"};
+let AUTH_READY = false, lastPg = "";
 function route(){
-  const h = location.hash.replace("#", ""), adm = h === "admin", pg = PAGES[h] ? h : "order";
-  $("customer").classList.toggle("hide", adm); $("admin").classList.toggle("hide", !adm); $("nav").classList.toggle("hide", adm);
+  const h = location.hash.replace("#", ""), adm = h === "admin";
+  const pg = USER ? (PAGES[h] ? h : "order") : "account";
+  const hold = !adm && !AUTH_READY;
+  $("customer").classList.toggle("hide", adm || hold);
+  $("admin").classList.toggle("hide", !adm);
+  $("nav").classList.toggle("hide", adm || hold || !USER);
+  $("foot").classList.toggle("hide", !adm && !USER);
   Object.entries(PAGES).forEach(([k, id]) => $(id).classList.toggle("hide", k !== pg));
   document.querySelectorAll("#nav a").forEach(x => x.classList.toggle("on", x.dataset.p === pg));
-  if(adm) checkSession(); else if(pg === "contact") loadThread();
-  scrollTo(0, 0);
+  if(adm) checkSession(); else if(!hold && USER){ if(pg === "contact") loadThread(); if(pg === "download") loadMyOrders(); }
+  if(pg !== lastPg){ scrollTo(0, 0); lastPg = pg; }
 }
+setTimeout(() => { if(!AUTH_READY){ AUTH_READY = true; route(); } }, 4000);
 addEventListener("hashchange", route);
 
 async function checkSession(){
   const {data} = await sb.auth.getSession();
-  const on = !!data.session;
+  let on = !!data.session;
+  if(on){ const r = await sb.rpc("is_admin"); if(r.error || r.data !== true){ on = false; setMsg("loginMsg", "এই অ্যাকাউন্টের অ্যাডমিন অনুমতি নেই। অ্যাডমিন ইমেইল দিয়ে লগইন করুন।", true); } }
   $("loginBox").classList.toggle("hide", on); $("panel").classList.toggle("hide", !on);
   if(on){ loadOrders(); loadMsgs(); loadSvcAdmin(); buildSettings(); }
 }
@@ -535,6 +707,7 @@ async function renderOrders(){
     div.querySelector(".dl").onclick = async () => {
       if(!confirm("অর্ডারটি স্থায়ীভাবে মুছবেন?")) return;
       if(paths.length) await sb.storage.from("uploads").remove(paths);
+      const rp = items.flatMap(it => it.result_files || []); if(rp.length) await sb.storage.from("results").remove(rp);
       await sb.from("orders").delete().eq("id", o.id); loadOrders();
     };
     box.appendChild(div);
@@ -544,6 +717,11 @@ async function renderOrders(){
 // --- মেসেজ ---
 let MSGS = [], openTh = {};
 $("reloadMsgs").onclick = loadMsgs;
+$("delAllMsgs").onclick = async () => {
+  if(!confirm("সব গ্রাহকের সব মেসেজ স্থায়ীভাবে মুছবেন?")) return;
+  const r = await sb.from("messages").delete().gte("created_at", "1970-01-01");
+  if(r.error) return alert("মোছা যায়নি"); openTh = {}; loadMsgs();
+};
 async function loadMsgs(){
   const {data, error} = await sb.from("messages").select("*").order("created_at");
   if(error) return $("msgList").textContent = "লোড করা যায়নি: " + error.message;
@@ -560,10 +738,11 @@ function renderMsgs(){
     const d = document.createElement("div"); d.className = "row";
     d.innerHTML = `<div class="th"><b>${esc(first.name || "")}</b> · ${esc(first.phone)} ${unread ? `<span class="badge">নতুন ${bn(unread)}</span>` : ""}<div class="sub" style="margin:0">${esc(last.body.slice(0, 70))}</div></div>
       <div class="tb ${openTh[code] ? "" : "hide"}">
-        <div class="chat" style="margin-top:10px">${ms.map(m => `<div class="bub ${m.from_admin ? "mine" : "theirs"}">${esc(m.body)}<small>${new Date(m.created_at).toLocaleString("bn-BD")}</small></div>`).join("")}</div>
+        <div class="chat" style="margin-top:10px">${ms.map(m => `<div class="bub ${m.from_admin ? "mine" : "theirs"}">${esc(m.body)}<small>${new Date(m.created_at).toLocaleString("bn-BD")} <u class="dmsg" data-id="${m.id}" style="cursor:pointer;margin-left:8px">🗑 মুছুন</u></small></div>`).join("")}</div>
         <textarea class="rt" rows="2" placeholder="উত্তর লিখুন"></textarea>
         <button class="sm rs">উত্তর পাঠান</button>
         <a class="sm" href="sms:${esc(first.phone)}">✉️ SMS অ্যাপে</a> · <a class="sm" href="tel:${esc(first.phone)}">📞 কল</a>
+        <button class="sm danger dm">🗑 মুছুন</button>
       </div>`;
     const tb = d.querySelector(".tb");
     d.querySelector(".th").onclick = async () => {
@@ -574,6 +753,17 @@ function renderMsgs(){
       const body = d.querySelector(".rt").value.trim(); if(!body) return;
       const r = await sb.from("messages").insert({thread_code: code, name: first.name, phone: first.phone, body, from_admin: true, is_read: true});
       if(r.error) return alert("পাঠানো যায়নি"); openTh[code] = true; loadMsgs();
+    };
+    d.querySelectorAll(".dmsg").forEach(u => u.onclick = async () => {
+      if(!confirm("এই মেসেজটি মুছবেন?")) return;
+      const r = await sb.from("messages").delete().eq("id", u.dataset.id);
+      if(r.error) return alert("মোছা যায়নি"); loadMsgs();
+    });
+    d.querySelector(".dm").onclick = async () => {
+      if(!confirm("এই কথোপকথনের সব মেসেজ স্থায়ীভাবে মুছবেন?")) return;
+      const r = await sb.from("messages").delete().eq("thread_code", code);
+      if(r.error) return alert("মোছা যায়নি");
+      delete openTh[code]; loadMsgs();
     };
     $("msgList").appendChild(d);
   });
@@ -612,6 +802,8 @@ async function buildSettings(){
     ? `<label>${l}</label><select data-k="font">${Object.keys(FONTS).map(f => `<option ${(cur.font || "Hind Siliguri") === f ? "selected" : ""}>${f}</option>`).join("")}</select>`
     : `<label>${l}</label><input data-k="${k}" ${k === "accent" ? 'type="color" style="height:46px;padding:4px"' : ""} value="${esc(cur[k] || (k === "accent" ? "#0f766e" : ""))}">`).join("");
   $("setForm").querySelector("select[data-k=font]").onchange = e => applyFont(e.target.value);
+  $("setForm").insertAdjacentHTML("beforeend", `<label>থিম (ডিজাইন)</label><select data-k="theme">${Object.entries(THEMES).map(([k, v]) => `<option value="${k}" ${(cur.theme || "aurora") === k ? "selected" : ""}>${v}</option>`).join("")}</select>`);
+  $("setForm").querySelector("select[data-k=theme]").onchange = e => applyTheme(e.target.value);
 }
 $("saveSet").onclick = async () => {
   const rows = [...document.querySelectorAll("#setForm input, #setForm select")].map(i => ({key: i.dataset.k, value: i.value.trim()}));
