@@ -284,6 +284,18 @@ html[data-theme=paper] main{margin-top:-46px}
       <div id="setForm"></div>
       <button id="saveSet">সেটিংস সেভ করুন</button>
       <div class="msg" id="setMsg"></div>
+      <hr style="border:0;border-top:1px solid var(--bd);margin:22px 0">
+      <h2>📲 ফোনে নোটিফিকেশন (Telegram)</h2>
+      <p class="sub">নতুন অর্ডার ও নতুন মেসেজ এলে আপনার Telegram এ বার্তা আসবে।<br>
+      ১) Telegram এ <b>@BotFather</b> → /newbot দিয়ে বট বানান, Token কপি করুন।<br>
+      ২) নিজের বটে গিয়ে <b>Start</b> চাপুন (জরুরি)।<br>
+      ৩) <b>@userinfobot</b> এ Start দিলে আপনার Id (সংখ্যা) পাবেন, ওটাই Chat ID।</p>
+      <div class="sub" id="tgState"></div>
+      <label>Bot Token</label><input id="tgToken" type="password" placeholder="123456789:AAH..." autocomplete="off">
+      <label>Chat ID</label><input id="tgChat" placeholder="123456789" inputmode="numeric">
+      <button id="tgSave">নোটিফিকেশন সেভ করুন</button>
+      <button class="sec" id="tgTest">টেস্ট বার্তা পাঠান</button>
+      <div class="msg" id="tgMsg"></div>
     </div>
   </div>
 </div>
@@ -532,7 +544,7 @@ async function loadMyOrders(){
       : `<span class="st ok2">✔ অর্ডার জমা</span><span class="st ${paid ? "ok2" : "wait"}">${paid ? "✔ পেমেন্ট যাচাই হয়েছে" : "⏳ পেমেন্ট যাচাই বাকি"}</span><span class="st ${st === "done" ? "ok2" : "wait"}">${st === "done" ? "✔ কাজ সম্পন্ন" : "⏳ কাজ বাকি"}</span>`;
     const items = (o.order_items || []).map((it, i) => `<div class="item" style="margin:8px 0 0"><b>${bn(i + 1)}. ${esc(it.service)}</b> – ৳${bn(it.price)} <span class="badge ${rej ? "rejected" : it.done ? "done" : ""}">${rej ? "বাতিল" : it.done ? "সম্পন্ন" : "চলছে"}</span>
       ${it.note ? `<div class="sub" style="margin:2px 0">📝 ${esc(it.note)}</div>` : ""}
-      ${(it.result_files || []).map((f, j) => `<a class="btn" href="${sb.storage.from("results").getPublicUrl(f).data.publicUrl}" target="_blank" download>📥 ফাইল ${bn(j + 1)} ডাউনলোড</a>`).join("")}
+      ${(it.result_files || []).map((f, j) => `<button class="dlb" data-o="${o.id}" data-i="${it.id}" data-f="${esc(f)}">📥 ফাইল ${bn(j + 1)} ডাউনলোড</button>`).join("")}
       ${!rej && !it.done ? '<div class="sub" style="margin:4px 0 0">কাজ শেষ হলে এখানেই ডাউনলোড বাটন আসবে।</div>' : ""}</div>`).join("");
     return `<div class="row"><b style="font-size:1.15rem;letter-spacing:3px">${esc(o.code)}</b> <span class="badge ${esc(st)}">${MYST[st] || esc(st)}</span>
       <div class="sub" style="margin:2px 0 6px">${new Date(o.created_at).toLocaleString("bn-BD")}</div>
@@ -542,6 +554,13 @@ async function loadMyOrders(){
       ${!paid && !rej ? '<div class="sub">পেমেন্ট যাচাই হলে কাজ শুরু হবে। দেরি হলে <a href="#contact">যোগাযোগ করুন</a>।</div>' : ""}
       ${items}</div>`;
   }).join("") : '<p class="sub">এখনো কোনো অর্ডার নেই।</p>';
+  box.querySelectorAll(".dlb").forEach(b => b.onclick = async () => {
+    const old = b.textContent; b.disabled = true; b.textContent = "প্রস্তুত হচ্ছে...";
+    const {data: sg, error: se} = await sb.storage.from("results").createSignedUrl(b.dataset.f, 120, {download: true});
+    b.disabled = false; b.textContent = old;
+    if(se || !sg) return alert("ডাউনলোড লিংক তৈরি করা যায়নি, আবার চেষ্টা করুন।");
+    location.href = sg.signedUrl;
+  });
 }
 
 // ================= যোগাযোগ =================
@@ -611,7 +630,7 @@ async function checkSession(){
   let on = !!data.session;
   if(on){ const r = await sb.rpc("is_admin"); if(r.error || r.data !== true){ on = false; setMsg("loginMsg", "এই অ্যাকাউন্টের অ্যাডমিন অনুমতি নেই। অ্যাডমিন ইমেইল দিয়ে লগইন করুন।", true); } }
   $("loginBox").classList.toggle("hide", on); $("panel").classList.toggle("hide", !on);
-  if(on){ loadOrders(); loadUsers(); loadMsgs(); loadSvcAdmin(); buildSettings(); }
+  if(on){ loadOrders(); loadUsers(); loadMsgs(); loadSvcAdmin(); buildSettings(); tgStatus(); }
 }
 $("loginBtn").onclick = async () => {
   const {error} = await sb.auth.signInWithPassword({email: $("aemail").value.trim(), password: $("apass").value});
@@ -775,6 +794,20 @@ function renderUsers(){
     box.appendChild(d);
   });
 }
+
+// --- Telegram ---
+async function tgStatus(){ const r = await sb.rpc("admin_telegram_status"); $("tgState").textContent = r.data ? "✅ নোটিফিকেশন চালু আছে" : "⚪ এখনো চালু হয়নি"; }
+$("tgSave").onclick = async () => {
+  const t = $("tgToken").value.trim(), c = $("tgChat").value.trim();
+  if(!/^\d{6,}:[A-Za-z0-9_-]{20,}$/.test(t) || !/^-?\d+$/.test(c)) return setMsg("tgMsg", "Token ও Chat ID সঠিকভাবে দিন (Chat ID শুধু সংখ্যা)।", true);
+  const r = await sb.rpc("admin_save_telegram", {p_token: t, p_chat: c});
+  if(r.error) return setMsg("tgMsg", "সেভ হয়নি: " + r.error.message, true);
+  $("tgToken").value = ""; setMsg("tgMsg", "সেভ হয়েছে ✓ এবার টেস্ট বার্তা পাঠিয়ে দেখুন।"); tgStatus();
+};
+$("tgTest").onclick = async () => {
+  const r = await sb.rpc("admin_test_telegram");
+  setMsg("tgMsg", r.error ? "পাঠানো যায়নি: " + r.error.message : "টেস্ট বার্তা পাঠানো হয়েছে। Telegram এ দেখুন (১০-২০ সেকেন্ড লাগতে পারে)।", !!r.error);
+};
 
 // --- মেসেজ ---
 let MSGS = [], openTh = {};
