@@ -73,6 +73,8 @@ a.qc i{font-style:normal;font-size:1.6rem}
 .bub.mine{align-self:flex-end;background:linear-gradient(135deg,var(--pri),color-mix(in srgb,var(--pri) 65%,#000));color:#fff;border-bottom-right-radius:5px}
 .bub.theirs{align-self:flex-start;background:var(--bg);border:1px solid var(--bd);border-bottom-left-radius:5px}
 .th{cursor:pointer}
+.st{display:inline-block;padding:3px 11px;border-radius:99px;font-size:.78rem;font-weight:600;margin:2px 4px 2px 0}
+.st.ok2{background:#16a34a22;color:#15803d}.st.wait{background:#f59e0b24;color:#b45309}.st.bad{background:#dc262622;color:#b91c1c}
 nav{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(440px,calc(100% - 24px));display:flex;gap:4px;padding:6px;background:color-mix(in srgb,var(--card) 82%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--bd);border-radius:26px;box-shadow:0 16px 44px rgba(0,0,0,.22);z-index:50}
 nav a{flex:1;text-align:center;padding:8px 4px;border-radius:20px;color:var(--mut);text-decoration:none;font-size:.78rem;font-weight:600;transition:.2s}
 nav a i{display:block;font-style:normal;font-size:1.3rem;line-height:1.2}
@@ -167,24 +169,7 @@ html[data-theme=paper] main{margin-top:-46px}
 
 </section>
 <section class="pg hide" id="pgDownload">
-  <div class="card" id="myCard"><h2>📦 আমার অর্ডার</h2><div id="myOrders"></div></div>
-  <div class="card" id="trackCard">
-    <h2>অর্ডারের অবস্থা ও ডাউনলোড</h2>
-    <p class="sub">কোড ও মোবাইল নম্বর দিয়ে দেখুন</p>
-    <label>অর্ডার কোড</label><input id="tcode" style="text-transform:uppercase" placeholder="AB12CD">
-    <label>মোবাইল নম্বর</label><input id="tphone" type="tel" inputmode="numeric">
-    <button class="sec" id="trackBtn">দেখুন</button>
-    <div class="msg" id="trackMsg"></div>
-  </div>
-  <div class="card" id="forgotCard">
-    <h2>🔎 অর্ডার নম্বর ভুলে গেছেন?</h2>
-    <p class="sub">অর্ডার করার সময়ের মোবাইল নম্বর ও অর্ডারের তারিখ দিন</p>
-    <label>মোবাইল নম্বর</label><input id="fgPhone" type="tel" inputmode="numeric" placeholder="01XXXXXXXXX">
-    <label>অর্ডারের তারিখ</label><input id="fgDate" type="date">
-    <button class="sec" id="fgBtn">অর্ডার নম্বর খুঁজুন</button>
-    <div class="msg" id="fgMsg"></div>
-    <div id="fgList"></div>
-  </div>
+  <div class="card" id="myCard"><h2>📦 আমার অর্ডার</h2><p class="sub">অবস্থা, পেমেন্ট যাচাই ও ফাইল ডাউনলোড এখানেই</p><button class="sec sm" id="refreshOrders" style="margin:0 0 6px">🔄 রিফ্রেশ</button><div id="myOrders"></div></div>
 </section>
 <section class="pg hide" id="pgContact">
   <div class="card">
@@ -429,7 +414,7 @@ $("orderBtn").onclick = async () => {
   $("orderBtn").disabled = false;
   try{ localStorage.setItem("lastOrder", JSON.stringify({code, phone})); }catch(e){}
   $("doneCode").textContent = code; $("orderCard").classList.add("hide"); $("doneCard").classList.remove("hide");
-  $("tcode").value = code; $("tphone").value = phone; setMsg("orderMsg", "");
+  setMsg("orderMsg", "");
   scrollTo({top: 0, behavior: "smooth"});
 };
 $("copyCode").onclick = () => { copy($("doneCode").textContent); $("copyCode").textContent = "কপি হয়েছে ✓"; };
@@ -439,22 +424,6 @@ $("newOrder").onclick = () => {
   $("doneCard").classList.add("hide"); $("orderCard").classList.remove("hide"); $("copyCode").textContent = "কোড কপি";
 };
 
-try{ const l = JSON.parse(localStorage.getItem("lastOrder") || "null"); if(l){ $("tcode").value = l.code; $("tphone").value = l.phone; } }catch(e){}
-
-$("trackBtn").onclick = async () => {
-  const code = $("tcode").value.trim(), phone = normPhone($("tphone").value.trim());
-  if(!code || !phone) return setMsg("trackMsg", "কোড ও ফোন নম্বর দিন।", true);
-  const [a, b] = await Promise.all([sb.rpc("track_order", {p_code: code, p_phone: phone}), sb.rpc("track_items", {p_code: code, p_phone: phone})]);
-  if(a.error || !a.data || !a.data.length) return setMsg("trackMsg", "কোনো অর্ডার পাওয়া যায়নি। কোড ও নম্বর মিলিয়ে দেখুন।", true);
-  const o = a.data[0], items = b.data || [], el = $("trackMsg"); el.className = "msg";
-  const head = o.status === "rejected" ? "❌ অর্ডারটি বাতিল হয়েছে।" : o.status === "done" ? "✅ সব কাজ সম্পন্ন!" : o.status === "processing" ? "🔵 পেমেন্ট যাচাই হয়েছে, কাজ চলছে।" : "🟡 পেমেন্ট যাচাইয়ের অপেক্ষায়।";
-  const extra = o.admin_note ? `<br><span class="sub">বার্তা: ${esc(o.admin_note)}</span>` : "";
-  const list = items.map((it, i) => {
-    const links = (it.result_files || []).map((p, j) => `<a class="btn" href="${sb.storage.from("results").getPublicUrl(p).data.publicUrl}" target="_blank" download>📥 ফাইল ${bn(j + 1)} ডাউনলোড</a>`).join("");
-    return `<div class="row"><b>${bn(i + 1)}. ${esc(it.service)}</b> <span class="badge ${it.done ? "done" : ""}">${it.done ? "সম্পন্ন" : "চলছে"}</span>${links}</div>`;
-  }).join("");
-  el.innerHTML = head + extra + list;
-};
 
 // ================= ইউজার অ্যাকাউন্ট =================
 let USER = null, authMode = "login", RECOVERY = false;
@@ -534,38 +503,31 @@ sb.auth.onAuthStateChange((ev, session) => {
 });
 
 const MYST = {pending: "অপেক্ষায়", processing: "চলছে", done: "সম্পন্ন", rejected: "বাতিল"};
+$("refreshOrders").onclick = () => loadMyOrders();
+setInterval(() => { if(USER && location.hash === "#download") loadMyOrders(); }, 30000);
 async function loadMyOrders(){
   const box = $("myOrders");
-  if(!USER){ box.innerHTML = '<p class="sub">নিজের সব অর্ডার ও ফাইল এক জায়গায় দেখতে লগইন করুন।</p><a class="btn" href="#account">লগইন / সাইন আপ</a>'; return; }
-  box.innerHTML = '<p class="sub">লোড হচ্ছে...</p>';
+  if(!USER){ box.innerHTML = '<p class="sub">নিজের সব অর্ডার ও ফাইল এক জায়গায় দেখতে লগইন করুন।</p>'; return; }
+  if(!box.innerHTML.trim()) box.innerHTML = '<p class="sub">লোড হচ্ছে...</p>';
   const {data, error} = await sb.from("orders").select("*, order_items(*)").eq("user_id", USER.id).order("created_at", {ascending: false}).order("pos", {referencedTable: "order_items"});
   if(error) return box.innerHTML = '<p class="sub err">লোড করা যায়নি।</p>';
-  box.innerHTML = data.length ? data.map(o => `<div class="row"><b style="font-size:1.15rem;letter-spacing:3px">${esc(o.code)}</b> <span class="badge ${esc(o.status)}">${MYST[o.status] || esc(o.status)}</span>
-    <div class="sub" style="margin:0">${new Date(o.created_at).toLocaleString("bn-BD")} · মোট ৳${bn(o.price)}</div>
-    ${o.admin_note ? `<div class="sub">বার্তা: ${esc(o.admin_note)}</div>` : ""}
-    ${(o.order_items || []).map((it, i) => `<div class="item" style="margin:8px 0 0"><b>${bn(i + 1)}. ${esc(it.service)}</b> <span class="badge ${it.done ? "done" : ""}">${it.done ? "সম্পন্ন" : "চলছে"}</span>${(it.result_files || []).map((f, j) => `<a class="btn" href="${sb.storage.from("results").getPublicUrl(f).data.publicUrl}" target="_blank" download>📥 ফাইল ${bn(j + 1)} ডাউনলোড</a>`).join("")}</div>`).join("")}</div>`).join("") : '<p class="sub">এখনো কোনো অর্ডার নেই।</p>';
+  box.innerHTML = data.length ? data.map(o => {
+    const st = o.status, paid = st === "processing" || st === "done", rej = st === "rejected";
+    const chips = rej ? '<span class="st bad">❌ অর্ডার বাতিল</span>'
+      : `<span class="st ok2">✔ অর্ডার জমা</span><span class="st ${paid ? "ok2" : "wait"}">${paid ? "✔ পেমেন্ট যাচাই হয়েছে" : "⏳ পেমেন্ট যাচাই বাকি"}</span><span class="st ${st === "done" ? "ok2" : "wait"}">${st === "done" ? "✔ কাজ সম্পন্ন" : "⏳ কাজ বাকি"}</span>`;
+    const items = (o.order_items || []).map((it, i) => `<div class="item" style="margin:8px 0 0"><b>${bn(i + 1)}. ${esc(it.service)}</b> – ৳${bn(it.price)} <span class="badge ${rej ? "rejected" : it.done ? "done" : ""}">${rej ? "বাতিল" : it.done ? "সম্পন্ন" : "চলছে"}</span>
+      ${it.note ? `<div class="sub" style="margin:2px 0">📝 ${esc(it.note)}</div>` : ""}
+      ${(it.result_files || []).map((f, j) => `<a class="btn" href="${sb.storage.from("results").getPublicUrl(f).data.publicUrl}" target="_blank" download>📥 ফাইল ${bn(j + 1)} ডাউনলোড</a>`).join("")}
+      ${!rej && !it.done ? '<div class="sub" style="margin:4px 0 0">কাজ শেষ হলে এখানেই ডাউনলোড বাটন আসবে।</div>' : ""}</div>`).join("");
+    return `<div class="row"><b style="font-size:1.15rem;letter-spacing:3px">${esc(o.code)}</b> <span class="badge ${esc(st)}">${MYST[st] || esc(st)}</span>
+      <div class="sub" style="margin:2px 0 6px">${new Date(o.created_at).toLocaleString("bn-BD")}</div>
+      <div>${chips}</div>
+      <div class="sub" style="margin:6px 0">💳 TrxID: <b>${esc(o.trx_id)}</b> · মোট ৳${bn(o.price)}</div>
+      ${rej ? `<div class="item" style="border-color:#dc2626;margin-bottom:0"><b>❌ বাতিলের কারণ:</b><br>${esc(o.admin_note || "কারণ উল্লেখ করা হয়নি। দোকানের সাথে যোগাযোগ করুন।")}</div>` : (o.admin_note ? `<div class="sub">💬 দোকানের বার্তা: ${esc(o.admin_note)}</div>` : "")}
+      ${!paid && !rej ? '<div class="sub">পেমেন্ট যাচাই হলে কাজ শুরু হবে। দেরি হলে <a href="#contact">যোগাযোগ করুন</a>।</div>' : ""}
+      ${items}</div>`;
+  }).join("") : '<p class="sub">এখনো কোনো অর্ডার নেই।</p>';
 }
-
-// ================= অর্ডার নম্বর খোঁজা =================
-$("fgDate").value = $("fgDate").max = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-const FGST = {pending: "অপেক্ষায়", processing: "চলছে", done: "সম্পন্ন", rejected: "বাতিল"};
-$("fgBtn").onclick = async () => {
-  const phone = normPhone($("fgPhone").value.trim()), date = $("fgDate").value;
-  $("fgList").innerHTML = "";
-  if(!/^01\d{9}$/.test(phone) || !date) return setMsg("fgMsg", "সঠিক মোবাইল নম্বর ও তারিখ দিন।", true);
-  setMsg("fgMsg", "খোঁজা হচ্ছে...");
-  const {data, error} = await sb.rpc("find_orders", {p_phone: phone, p_date: date});
-  if(error) return setMsg("fgMsg", "খোঁজা যায়নি, আবার চেষ্টা করুন।", true);
-  if(!data || !data.length) return setMsg("fgMsg", "ওই নম্বরে ওই তারিখে কোনো অর্ডার পাওয়া যায়নি।", true);
-  setMsg("fgMsg", `${bn(data.length)}টি অর্ডার পাওয়া গেছে:`);
-  $("fgList").innerHTML = data.map(o => `<div class="row"><b style="font-size:1.3rem;letter-spacing:4px">${esc(o.code)}</b> <span class="badge ${esc(o.status)}">${FGST[o.status] || esc(o.status)}</span>
-    <div class="sub" style="margin:0">${new Date(o.created_at).toLocaleTimeString("bn-BD", {hour: "2-digit", minute: "2-digit"})} · ${esc(o.service)}</div>
-    <button class="sm sec use" data-c="${esc(o.code)}" data-p="${esc(phone)}">এই অর্ডার দেখুন</button></div>`).join("");
-  $("fgList").querySelectorAll(".use").forEach(b => b.onclick = () => {
-    $("tcode").value = b.dataset.c; $("tphone").value = b.dataset.p; $("trackBtn").click();
-    $("trackCard").scrollIntoView({behavior: "smooth"});
-  });
-};
 
 // ================= যোগাযোগ =================
 const safeUrl = u => /^https?:\/\//i.test(u || "") ? esc(u) : "";
@@ -681,7 +643,7 @@ async function renderOrders(){
       <label>গ্রাহককে বার্তা (ঐচ্ছিক)</label><input class="an" value="${esc(o.admin_note)}">
       <button class="sm pr">🔵 পেমেন্ট ঠিক আছে</button>
       <button class="sm sec sn">বার্তা সেভ</button>
-      <button class="sm sec rj">বাতিল</button>
+      <button class="sm sec rj">বাতিল (কারণসহ)</button>
       <button class="sm danger dl">মুছুন</button>`;
     const upd = async patch => { const r = await sb.from("orders").update(patch).eq("id", o.id); if(r.error) alert("সেভ হয়নি"); loadOrders(); };
     const note = () => div.querySelector(".an").value.trim();
@@ -703,7 +665,10 @@ async function renderOrders(){
     });
     div.querySelector(".pr").onclick = () => upd({status: "processing", admin_note: note()});
     div.querySelector(".sn").onclick = () => upd({admin_note: note()});
-    div.querySelector(".rj").onclick = () => confirm("বাতিল করবেন?") && upd({status: "rejected", admin_note: note()});
+    div.querySelector(".rj").onclick = () => {
+      const r = prompt("বাতিলের কারণ লিখুন (গ্রাহক দেখতে পাবে):", note());
+      if(r === null) return; upd({status: "rejected", admin_note: r.trim()});
+    };
     div.querySelector(".dl").onclick = async () => {
       if(!confirm("অর্ডারটি স্থায়ীভাবে মুছবেন?")) return;
       if(paths.length) await sb.storage.from("uploads").remove(paths);
